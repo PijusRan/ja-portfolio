@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import { cloudinaryUrl } from '../lib/cloudinary';
+
+const galleries = (await getCollection('galleries')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Layout title="Andzius Photography">
+  <div class="gallery-grid">
+    {
+      galleries.map((gallery) => (
+        <a class="gallery-card" href={`/gallery/${gallery.id}/`}>
+          <img
+            src={cloudinaryUrl(gallery.data.coverImage, { width: 800 })}
+            alt={gallery.data.title}
+            loading="lazy"
+          />
+          <h2>{gallery.data.title}</h2>
+          {gallery.data.description && <p>{gallery.data.description}</p>}
+        </a>
+      ))
+    }
+  </div>
+</Layout>

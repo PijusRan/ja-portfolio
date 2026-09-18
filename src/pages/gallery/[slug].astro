@@ -1,0 +1,23 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Lightbox from '../../components/Lightbox.tsx';
+
+export async function getStaticPaths() {
+  const galleries = await getCollection('galleries');
+  return galleries.map((gallery) => ({
+    params: { slug: gallery.id },
+    props: { gallery },
+  }));
+}
+
+const { gallery } = Astro.props;
+const { Content } = await render(gallery);
+---
+
+<Layout title={`${gallery.data.title} — Andzius Photography`} description={gallery.data.description}>
+  <h1>{gallery.data.title}</h1>
+  {gallery.data.description && <p>{gallery.data.description}</p>}
+  <Content />
+  <Lightbox client:load photos={gallery.data.photos} />
+</Layout>
