@@ -1,10 +1,15 @@
 import { useEffect, useState } from 'react';
-import { cloudinarySrcSet, cloudinaryUrl } from '../lib/cloudinary';
+
+type ResponsiveImage = {
+  src: string;
+  srcset: string;
+};
 
 type Photo = {
-  publicId: string;
   alt: string;
   caption?: string;
+  thumb: ResponsiveImage;
+  full: ResponsiveImage;
 };
 
 export default function Lightbox({ photos }: { photos: Photo[] }) {
@@ -30,15 +35,15 @@ export default function Lightbox({ photos }: { photos: Photo[] }) {
       <div className="photo-grid">
         {photos.map((photo, i) => (
           <button
-            key={photo.publicId}
+            key={photo.thumb.src}
             type="button"
             className="photo-grid__item"
             onClick={() => setOpenIndex(i)}
             aria-label={`Open photo: ${photo.alt}`}
           >
             <img
-              src={cloudinaryUrl(photo.publicId, { width: 480 })}
-              srcSet={cloudinarySrcSet(photo.publicId, [320, 480, 768])}
+              src={photo.thumb.src}
+              srcSet={photo.thumb.srcset}
               sizes="(min-width: 900px) 25vw, 50vw"
               alt={photo.alt}
               loading="lazy"
@@ -59,8 +64,8 @@ export default function Lightbox({ photos }: { photos: Photo[] }) {
           </button>
           <img
             className="lightbox__image"
-            src={cloudinaryUrl(current.publicId, { width: 1600 })}
-            srcSet={cloudinarySrcSet(current.publicId)}
+            src={current.full.src}
+            srcSet={current.full.srcset}
             sizes="90vw"
             alt={current.alt}
             onClick={(e) => e.stopPropagation()}

@@ -1,5 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Layout from '../../layouts/Layout.astro';
 import Lightbox from '../../components/Lightbox.tsx';
 
@@ -13,11 +15,36 @@ export async function getStaticPaths() {
 
 const { gallery } = Astro.props;
 const { Content } = await render(gallery);
+
+const THUMB_WIDTHS = [320, 480, 768];
+const FULL_WIDTHS = [768, 1200, 1600, 2400];
+
+async function buildSrcSet(src: ImageMetadata, widths: number[]) {
+  const images = await Promise.all(widths.map((width) => getImage({ src, width, format: 'webp' })));
+  return images.map((img, i) => `${img.src} ${widths[i]}w`).join(', ');
+}
+
+const photos = await Promise.all(
+  gallery.data.photos.map(async (photo) => {
+    const [thumb, thumbSrcset, full, fullSrcset] = await Promise.all([
+      getImage({ src: photo.src, width: 480, format: 'webp' }),
+      buildSrcSet(photo.src, THUMB_WIDTHS),
+      getImage({ src: photo.src, width: 1600, format: 'webp' }),
+      buildSrcSet(photo.src, FULL_WIDTHS),
+    ]);
+    return {
+      alt: photo.alt,
+      caption: photo.caption,
+      thumb: { src: thumb.src, srcset: thumbSrcset },
+      full: { src: full.src, srcset: fullSrcset },
+    };
+  })
+);
 ---
 
 <Layout title={`${gallery.data.title} — JA Photography`} description={gallery.data.description}>
   <h1>{gallery.data.title}</h1>
   {gallery.data.description && <p>{gallery.data.description}</p>}
   <Content />
-  <Lightbox client:load photos={gallery.data.photos} />
+  <Lightbox client:load photos={photos} />
 </Layout>

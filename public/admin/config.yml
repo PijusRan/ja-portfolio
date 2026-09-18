@@ -12,15 +12,12 @@ backend:
 
 local_backend: true
 
-# Images are uploaded straight to Cloudinary from the CMS UI. Replace these
-# with your own values (see README > Cloudinary setup). The unsigned upload
-# preset must be created in your Cloudinary dashboard first.
-media_library:
-  name: cloudinary
-  config:
-    cloud_name: YOUR_CLOUDINARY_CLOUD_NAME
-    api_key: YOUR_CLOUDINARY_API_KEY
-    output_filename_only: true
+# Fallback media location for anything outside the galleries collection below.
+# Each gallery instead stores its own photos alongside its entry (see
+# `media_folder: ''` / `path` on the collection), so Astro's content
+# collections can resolve and optimize them at build time via astro:assets.
+media_folder: src/assets/uploads
+public_folder: src/assets/uploads
 
 publish_mode: simple
 
@@ -30,6 +27,9 @@ collections:
     label_singular: Gallery
     folder: src/content/galleries
     create: true
+    path: '{{slug}}/index'
+    media_folder: ''
+    public_folder: ''
     slug: '{{slug}}'
     fields:
       - { label: Title, name: title, widget: string }
@@ -37,7 +37,6 @@ collections:
       - label: Cover Image
         name: coverImage
         widget: image
-        media_library: { config: { output_filename_only: true } }
         hint: Shown on the homepage gallery grid.
       - { label: Order, name: order, widget: number, default: 0, hint: Lower numbers appear first on the homepage. }
       - label: Photos
@@ -45,10 +44,7 @@ collections:
         widget: list
         summary: '{{fields.alt}}'
         fields:
-          - label: Photo
-            name: publicId
-            widget: image
-            media_library: { config: { output_filename_only: true } }
+          - { label: Photo, name: src, widget: image }
           - { label: Alt text, name: alt, widget: string, hint: Describe the photo for accessibility and SEO. }
           - { label: Caption, name: caption, widget: string, required: false }
       - { label: Story (optional), name: body, widget: markdown, required: false }
