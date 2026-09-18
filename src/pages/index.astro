@@ -6,7 +6,7 @@ import { cloudinaryUrl } from '../lib/cloudinary';
 const galleries = (await getCollection('galleries')).sort((a, b) => a.data.order - b.data.order);
 ---
 
-<Layout title="Andzius Photography">
+<Layout title="JA Photography">
   <div class="gallery-grid">
     {
       galleries.map((gallery) => (

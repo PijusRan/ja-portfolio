@@ -15,7 +15,7 @@ const { gallery } = Astro.props;
 const { Content } = await render(gallery);
 ---
 
-<Layout title={`${gallery.data.title} — Andzius Photography`} description={gallery.data.description}>
+<Layout title={`${gallery.data.title} — JA Photography`} description={gallery.data.description}>
   <h1>{gallery.data.title}</h1>
   {gallery.data.description && <p>{gallery.data.description}</p>}
   <Content />

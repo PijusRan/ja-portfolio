@@ -1,4 +1,4 @@
-# Andzius Photography Portfolio
+# JA Photography Portfolio
 
 A serverless Jamstack portfolio: **Astro** (with **React** islands) for the site,
 **Decap CMS** for content editing, **Cloudinary** for image hosting/optimization,
@@ -62,7 +62,7 @@ full architecture writeup.
      use even when hosting elsewhere) or deploy a
      [self-hosted OAuth provider](https://decapcms.org/docs/external-oauth-clients/).
   2. Update `public/admin/config.yml`: set `repo` to your real
-     `owner/andzius-portfolio`, and set `base_url` to the OAuth provider's URL
+     `owner/ja-portfolio`, and set `base_url` to the OAuth provider's URL
      if self-hosting.
 
 ### 3. Vercel (hosting)
