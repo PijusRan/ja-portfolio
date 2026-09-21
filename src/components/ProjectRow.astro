@@ -1,0 +1,179 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { withBase } from '../lib/url';
+
+interface Props {
+  gallery: CollectionEntry<'galleries'>;
+  index: number;
+}
+
+const { gallery, index } = Astro.props;
+const { brand, season, title, layout, focal, coverImage } = gallery.data;
+const number = String(index + 1).padStart(2, '0');
+const isFull = layout === 'full';
+const sizes = isFull
+  ? '(min-width: 1024px) 1240px, 100vw'
+  : '(min-width: 1024px) 595px, (min-width: 640px) 355px, 335px';
+---
+
+<section class:list={['project', `project--${layout}`]} aria-label={`Projektas ${number}: ${title}`}>
+  {
+    isFull ? (
+      <>
+        <a class="project__image" href={withBase(`/gallery/${gallery.id}/`)}>
+          <Image src={coverImage} width={2400} {sizes} alt={title} loading={index < 2 ? 'eager' : 'lazy'} style={`object-position: ${focal}`} />
+        </a>
+        <div class="project__caption h2">
+          <p>{number}</p>
+          <p>{brand ?? title}</p>
+          <p>{season}</p>
+        </div>
+      </>
+    ) : (
+      <>
+        <div class="project__text h2">
+          <p>{number}</p>
+          <p class="project__title">
+            {brand ?? title}
+            {season && <br />}
+            {season}
+          </p>
+        </div>
+        <a class="project__image" href={withBase(`/gallery/${gallery.id}/`)}>
+          <Image src={coverImage} width={1200} {sizes} alt={title} loading={index < 2 ? 'eager' : 'lazy'} style={`object-position: ${focal}`} />
+        </a>
+      </>
+    )
+  }
+</section>
+
+<style>
+  .project {
+    display: flex;
+    gap: 50px;
+    padding-bottom: 90px;
+  }
+
+  .project__image {
+    display: block;
+    height: 543px;
+    flex: 1 0 0;
+    min-width: 1px;
+  }
+
+  .project__image :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .project__text {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1 0 0;
+    min-width: 1px;
+    height: 543px;
+  }
+
+  .project__title {
+    line-height: 0.8;
+  }
+
+  /* Image on the left: swap the columns */
+  .project--image-left {
+    flex-direction: row-reverse;
+  }
+
+  .project--narrow-left,
+  .project--narrow-right {
+    align-items: center;
+  }
+
+  .project--narrow-left {
+    flex-direction: row-reverse;
+  }
+
+  .project--narrow-left .project__image {
+    flex: 0 0 375px;
+  }
+
+  .project--narrow-right .project__image {
+    flex: 0 0 414px;
+  }
+
+  /* Full width image with number / brand / season underneath */
+  .project--full {
+    flex-direction: column;
+  }
+
+  .project--full .project__image {
+    flex: none;
+    width: 100%;
+  }
+
+  .project__caption {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 90px;
+    white-space: nowrap;
+  }
+
+  .project__caption p:nth-child(2) {
+    text-align: center;
+  }
+
+  .project__caption p:last-child {
+    text-align: right;
+  }
+
+  @media (max-width: 1023px) {
+    .project--narrow-left .project__image,
+    .project--narrow-right .project__image {
+      flex-basis: 355px;
+    }
+  }
+
+  /* Mobile: image first, then number and title stacked under it */
+  @media (max-width: 639px) {
+    .project,
+    .project--image-left,
+    .project--narrow-left,
+    .project--narrow-right {
+      flex-direction: column-reverse;
+      align-items: stretch;
+    }
+
+    .project--full {
+      flex-direction: column;
+    }
+
+    .project__image,
+    .project--narrow-left .project__image,
+    .project--narrow-right .project__image {
+      flex: none;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 335 / 488;
+    }
+
+    .project--narrow-left .project__image {
+      aspect-ratio: 335 / 543;
+    }
+
+    .project--narrow-right .project__image {
+      aspect-ratio: 414 / 543;
+    }
+
+    .project--full .project__image {
+      aspect-ratio: 335 / 543;
+    }
+
+    .project__text {
+      flex: none;
+      height: auto;
+      justify-content: flex-start;
+    }
+  }
+</style>

@@ -38,7 +38,16 @@ collections:
         name: coverImage
         widget: image
         hint: Shown on the homepage gallery grid.
-      - { label: Order, name: order, widget: number, default: 0, hint: Lower numbers appear first on the homepage. }
+      - { label: Order, name: order, widget: number, default: 0, hint: Lower numbers appear first on the homepage and work page. }
+      - { label: Brand, name: brand, widget: string, required: false, hint: 'Work page title, first line (e.g. "acne studios").' }
+      - { label: Season, name: season, widget: string, required: false, hint: 'Work page title, second line (e.g. "2024 autumn/fall").' }
+      - label: Work page layout
+        name: layout
+        widget: select
+        default: image-right
+        options: [image-right, image-left, full, narrow-left, narrow-right]
+        hint: Which side the cover sits on in the work page row (full = full width).
+      - { label: Cover focal point, name: focal, widget: string, default: '50% 50%', hint: 'CSS object-position for cropping, e.g. "50% 87%".' }
       - label: Photos
         name: photos
         widget: list

@@ -1,0 +1,15 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import ProjectRow from '../components/ProjectRow.astro';
+import { site } from '../data/site';
+
+const galleries = (await getCollection('galleries')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<Layout title={`Darbai — ${site.name}`} theme="light">
+  <h1 class="page-title h1">{site.name}</h1>
+  <main>
+    {galleries.map((gallery, i) => <ProjectRow gallery={gallery} index={i} />)}
+  </main>
+</Layout>

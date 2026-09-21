@@ -13,6 +13,13 @@ const galleries = defineCollection({
       description: z.string().optional(),
       coverImage: image(),
       order: z.number().default(0),
+      // Shown on the /darbai (work) page. Falls back to `title` when brand is empty.
+      brand: z.string().optional(),
+      season: z.string().optional(),
+      // Which side the cover image sits on in the /darbai row layout
+      layout: z.enum(['image-right', 'image-left', 'full', 'narrow-left', 'narrow-right']).default('image-right'),
+      // CSS object-position for the cover crop, e.g. "50% 87%"
+      focal: z.string().default('50% 50%'),
       photos: z.array(
         z.object({
           src: image(),

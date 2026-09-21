@@ -1,0 +1,117 @@
+---
+import { site } from '../data/site';
+---
+
+<footer class="footer">
+  <div class="footer__top">
+    <p>{site.cities.left}</p>
+    <p class="footer__name">{site.name}</p>
+    <p>{site.cities.right}</p>
+  </div>
+  <div class="footer__middle">
+    <div class="footer__socials">
+      <a href={`mailto:${site.email}`}>Email</a>
+      <a href={site.instagram} target="_blank" rel="noopener noreferrer">Insta</a>
+    </div>
+    <p>Made by</p>
+  </div>
+  <div class="footer__initials" aria-hidden="true">
+    <span>J</span>
+    <span class="footer__dot">.</span>
+    <span class="footer__a">A</span>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px 40px;
+    background: var(--footer-bg);
+    color: var(--footer-fg);
+    overflow: hidden;
+  }
+
+  .footer__top {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 100px;
+    white-space: nowrap;
+  }
+
+  .footer__middle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 120px;
+  }
+
+  .footer__socials {
+    display: flex;
+    justify-content: center;
+    gap: 275px;
+    height: 13px;
+    align-items: center;
+  }
+
+  /* Big wordmark: 605px in the 1280 design, so it scales with the viewport */
+  .footer__initials {
+    display: flex;
+    justify-content: space-between;
+    font-size: 47.27vw; /* 605 / 1280 */
+    line-height: 0.75;
+    letter-spacing: -0.02em;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .footer__initials span {
+    flex: 1 0 0;
+    min-width: 1px;
+  }
+
+  .footer__dot {
+    text-align: center;
+  }
+
+  .footer__a {
+    text-align: right;
+    /* the negative letter-spacing would otherwise clip the A's right foot */
+    padding-right: 0.02em;
+  }
+
+  @media (min-width: 1280px) {
+    .footer__initials {
+      font-size: 605px;
+    }
+  }
+
+  /* Tablet frame (800px) uses a 400px wordmark */
+  @media (max-width: 1023px) {
+    .footer__initials {
+      font-size: 50vw; /* 400 / 800 */
+    }
+
+    .footer__socials {
+      gap: 120px;
+    }
+  }
+
+  /* Mobile frame (375px): city + city only, socials spread out, 200px wordmark */
+  @media (max-width: 639px) {
+    .footer__name {
+      display: none;
+    }
+
+    .footer__socials {
+      justify-content: space-between;
+      gap: 0;
+      width: 100%;
+    }
+
+    .footer__initials {
+      font-size: 53.33vw; /* 200 / 375 */
+    }
+  }
+</style>

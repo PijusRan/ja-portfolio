@@ -1,0 +1,60 @@
+---
+import { site } from '../data/site';
+import { withBase } from '../lib/url';
+
+const path = Astro.url.pathname;
+const links = site.nav.map((link) => ({ ...link, href: withBase(link.href) }));
+---
+
+<nav class="nav" aria-label="Pagrindinis">
+  <a class="nav__brand" href={withBase('/')}>{site.brand}</a>
+  <ul class="nav__links">
+    {
+      links.map((link) => (
+        <li>
+          <a href={link.href} aria-current={path.startsWith(link.href) ? 'page' : undefined}>
+            {link.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px 0 30px;
+    min-height: 62px;
+  }
+
+  .nav__links {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav__links a {
+    display: block;
+    padding: 3px 5px;
+    text-align: right;
+  }
+
+  /* Mobile: links stack under each other, right-aligned */
+  @media (max-width: 639px) {
+    .nav {
+      min-height: 132px;
+    }
+
+    .nav__links {
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+  }
+</style>

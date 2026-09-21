@@ -1,0 +1,105 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+import portrait from '../assets/site/about-portrait.jpg';
+import { site } from '../data/site';
+---
+
+<Layout title={`Apie mane — ${site.name}`} theme="dark">
+  <h1 class="page-title h1">{site.name}</h1>
+  <main>
+    <div class="about">
+      <div class="about__image">
+        <Image
+          src={portrait}
+          width={1000}
+          sizes="(min-width: 1024px) 461px, (min-width: 640px) 560px, 335px"
+          alt="Justas Andžius"
+          loading="eager"
+        />
+      </div>
+      <!-- TODO: placeholder copy from the Figma design; replace with the real bio -->
+      <p class="about__bio">lab dein viseim</p>
+    </div>
+    <div class="cta">
+      <h2 class="h2">
+        Papildomai informacijai susisiekite
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </h2>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .about {
+    display: flex;
+    align-items: flex-start;
+    gap: 118px;
+    padding: 0 100px 150px;
+  }
+
+  .about__image,
+  .about__bio {
+    flex: 1 0 0;
+    min-width: 1px;
+  }
+
+  .about__image {
+    aspect-ratio: 1;
+  }
+
+  .about__image :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .about__bio {
+    padding-right: 100px;
+    font-family: var(--font-body);
+    font-size: 18px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-transform: none;
+  }
+
+  .cta {
+    display: flex;
+    justify-content: center;
+    padding: 300px 80px;
+    border-top: 1px solid var(--divider);
+    text-align: center;
+  }
+
+  @media (max-width: 1023px) {
+    .about {
+      flex-direction: column;
+      gap: 118px;
+    }
+
+    .about__image {
+      flex: none;
+      width: 100%;
+      aspect-ratio: 560 / 500;
+    }
+
+    .about__bio {
+      flex: none;
+      padding-right: 0;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .about {
+      padding: 0 0 150px;
+    }
+
+    .about__image {
+      aspect-ratio: 335 / 400;
+    }
+
+    .cta {
+      padding: 300px 40px;
+    }
+  }
+</style>

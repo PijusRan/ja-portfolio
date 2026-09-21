@@ -42,9 +42,11 @@ const photos = await Promise.all(
 );
 ---
 
-<Layout title={`${gallery.data.title} — JA Photography`} description={gallery.data.description}>
-  <h1>{gallery.data.title}</h1>
-  {gallery.data.description && <p>{gallery.data.description}</p>}
-  <Content />
-  <Lightbox client:load photos={photos} />
+<Layout title={`${gallery.data.title} — Justas Andžius`} description={gallery.data.description} theme="light">
+  <main class="gallery-detail">
+    <h1 class="h1">{gallery.data.title}</h1>
+    {gallery.data.description && <p>{gallery.data.description}</p>}
+    <div class="gallery-detail__body"><Content /></div>
+    <Lightbox client:load photos={photos} />
+  </main>
 </Layout>

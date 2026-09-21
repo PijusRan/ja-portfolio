@@ -1,0 +1,99 @@
+---
+import { Image } from 'astro:assets';
+import right from '../assets/site/runway-sunglasses.jpg';
+import left from '../assets/site/profile-portrait.jpg';
+import { site } from '../data/site';
+---
+
+<header class="hero">
+  <div class="hero__right">
+    <Image
+      src={right}
+      width={1100}
+      sizes="(max-width: 639px) 252px, (max-width: 1023px) 414px, 525px"
+      alt="Woman with sunglasses walking down runway"
+      loading="eager"
+      style="object-position: 50% 87%"
+    />
+  </div>
+  <div class="hero__left">
+    <Image
+      src={left}
+      width={600}
+      sizes="(max-width: 639px) 167px, (max-width: 1023px) 215px, 285px"
+      alt="Side profile portrait of a woman"
+      loading="eager"
+    />
+  </div>
+  <h1 class="h1">{site.name}</h1>
+</header>
+
+<style>
+  .hero {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 300px 0;
+  }
+
+  .hero h1 {
+    position: relative;
+    color: #fff;
+    mix-blend-mode: difference;
+    white-space: nowrap;
+    z-index: 1;
+  }
+
+  .hero__right,
+  .hero__left {
+    position: absolute;
+    overflow: hidden;
+  }
+
+  .hero__right :global(img),
+  .hero__left :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero__right {
+    top: 14px;
+    right: 0;
+    width: 524.6px;
+    height: 498px;
+  }
+
+  .hero__left {
+    bottom: 0;
+    left: 0;
+    width: 285px;
+    height: 369px;
+  }
+
+  @media (max-width: 1023px) {
+    .hero__right {
+      top: 0;
+      width: 414px;
+      height: 393px;
+    }
+
+    .hero__left {
+      width: 215.5px;
+      height: 279px;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .hero__right {
+      width: 251.8px;
+      height: 239px;
+    }
+
+    .hero__left {
+      width: 166.8px;
+      height: 216px;
+    }
+  }
+</style>

@@ -1,21 +1,50 @@
 ---
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
-
-const galleries = (await getCollection('galleries')).sort((a, b) => a.data.order - b.data.order);
+import Hero from '../components/Hero.astro';
+import WorkGrid from '../components/WorkGrid.astro';
+import arrow from '../assets/site/arrow-down.svg';
 ---
 
-<Layout title="JA Photography">
-  <div class="gallery-grid">
-    {
-      galleries.map((gallery) => (
-        <a class="gallery-card" href={`/gallery/${gallery.id}/`}>
-          <Image src={gallery.data.coverImage} width={800} format="webp" alt={gallery.data.title} loading="lazy" />
-          <h2>{gallery.data.title}</h2>
-          {gallery.data.description && <p>{gallery.data.description}</p>}
-        </a>
-      ))
-    }
+<Layout title="Justas Andžius">
+  <div class="home">
+    <Hero />
+    <main id="darbai">
+      <div class="discover">
+        <h2 class="h2">Darbai darbeliai</h2>
+        <img class="discover__arrow" src={arrow.src} width="6" height="5" alt="" />
+      </div>
+      <WorkGrid />
+    </main>
   </div>
 </Layout>
+
+<style>
+  /* Sections are separated by 50px in the home design */
+  .home {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    padding: 50px 0;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+  }
+
+  .discover {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 100px 0;
+    border-top: 0.5px solid var(--divider);
+    text-align: center;
+  }
+
+  /* The exported triangle points up; the design flips it to point down */
+  .discover__arrow {
+    transform: scaleY(-1);
+  }
+</style>

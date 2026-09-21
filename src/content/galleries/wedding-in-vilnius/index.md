@@ -2,7 +2,7 @@
 title: Wedding in Vilnius
 description: A rainy October wedding in the old town.
 coverImage: ./cover.jpg
-order: 1
+order: 10
 photos:
   - src: ./photo-1.jpg
     alt: Bride and groom walking through the old town
