@@ -35,6 +35,7 @@ Each page picks a colour theme: cream (home), white (work), black (about).
 │   └── admin/                     # Decap CMS: index.html, config.yml, admin.css, admin.js (live preview)
 ├── src/
 │   ├── assets/
+│   │   ├── uploads/               # Shared photo library (Media tab + all galleries)
 │   │   ├── fonts/                 # NATS and Crimson Text (self-hosted)
 │   │   └── site/                  # Hero images, about portrait, arrow icon
 │   ├── components/
@@ -44,11 +45,11 @@ Each page picks a colour theme: cream (home), white (work), black (about).
 │   │   └── Lightbox.tsx           # React lightbox for the gallery detail page
 │   ├── content/galleries/<slug>/  # One folder per gallery
 │   │   ├── index.md               # Frontmatter (see below) + optional story
-│   │   └── *.jpg                  # Photos, co-located with their entry
 │   ├── content.config.ts          # Schema for the `galleries` collection
 │   ├── data/site.ts               # Name, email, Instagram, cities, nav links
 │   ├── layouts/Layout.astro       # Shell: header, footer, page theme
 │   ├── lib/
+│   │   ├── photos.ts              # A gallery's cover + photos, de-duplicated
 │   │   ├── preview.ts             # Builds the photo list for the preview dialog
 │   │   └── url.ts                 # withBase(): prefixes links with the site's base path
 │   ├── pages/                     # index, darbai, apie, gallery/[slug]
@@ -69,23 +70,26 @@ Each page picks a colour theme: cream (home), white (work), black (about).
 
 ## Content: galleries
 
-Each gallery is a folder in `src/content/galleries/` with an `index.md`:
+Each gallery is a folder in `src/content/galleries/` with an `index.md`. The images
+themselves live in one shared library, `src/assets/uploads/`, and galleries refer to
+them with `~/assets/uploads/…` paths (the `~` alias is set in `tsconfig.json`). The
+same photo can be used by several galleries.
 
 ```yaml
 ---
 title: acne studios 2024 autumn/fall # internal name
-coverImage: ./runway-white-dress.jpg # home grid + work page
+coverImage: ~/assets/uploads/runway-white-dress.jpg # home grid + work page
 order: 2 # lower comes first on home and work pages
 brand: acne studios # work page, first line (falls back to title)
 season: 2024 autumn/fall # work page, second line
 layout: image-left # image-right | image-left | full | narrow-left | narrow-right
 focal: '50% 50%' # crop position of the cover, as CSS object-position
-photos: # extra photos for the preview / gallery page
-  - ./runway-white-dress.jpg
+photos: # shown after the cover in the preview and on the gallery page
+  - ~/assets/uploads/chair.jpg
 ---
 ```
 
-Alt text is generated from the title. Optional: `description` and a markdown
+Alt text is generated from the title (there are no per-photo captions). Optional: `description` and a markdown
 body (shown on the gallery detail page). The schema lives in
 `src/content.config.ts`.
 
@@ -100,8 +104,8 @@ names (`src/data/site.ts`).
 
 - **Local editing** (no accounts needed): run `npx decap-server` in one
   terminal and `npm run dev` in another, then open `/admin`. Changes,
-  including uploaded photos, are written straight to
-  `src/content/galleries/<slug>/` on disk.
+  including uploaded photos, are written straight to disk (entries to
+  `src/content/galleries/<slug>/`, photos to `src/assets/uploads/`).
 - **Production editing**: the CMS uses the `github` backend, so the
   photographer logs in with GitHub to edit content on the live site. This needs
   an OAuth app and a small proxy (neither Vercel nor GitHub Pages provides one):
@@ -114,16 +118,25 @@ names (`src/data/site.ts`).
      deployed branch (currently `main`, while this repo's branch is `master`),
      and set `base_url` if self-hosting the OAuth provider.
 
-**Uploading several photos at once:** in a gallery, open the *Photos* field and
-choose *Choose images*. In the media library use *Upload* to add several files
-at once, or tick several existing files and press *Choose selected*. The editor
-shows a live preview of the work-page row next to the form.
+**Photos workflow.** There is one photo library, used by the *Media* tab, the
+*Cover image* picker and the *Photos* picker, so an upload from any of them is
+available everywhere.
 
-Each gallery's `path: '{{slug}}/index'` + `media_folder: ''` in `config.yml`
-tells Decap to save photos into the same folder as the gallery's `index.md`,
-where `src/content.config.ts` expects them for the `image()` schema. The
-dashboard's look is in `public/admin/admin.css` (it targets Decap's internal
-class names, so a Decap upgrade may need small fixes).
+- *Upload* in the library accepts several files at once. Decap normally takes one,
+  so `public/admin/admin.js` feeds them to it one at a time.
+- *Cover image*: pick one photo from the library (or upload it there).
+- *Photos*: click *Add photos*, click as many photos as you like to tick them (or
+  *Select all*), then *Add N selected* in the bar at the bottom. Reorder with ‹ ›
+  and remove with ×. This field is a custom widget (`photo-list` in `admin.js`),
+  because Decap's own picker only selects one image at a time.
+- The editor shows a live preview of the work-page row next to the form.
+
+Large originals bloat the repo, so resize photos to about 2500px on the long edge
+before uploading. Astro makes the smaller web versions at build time.
+
+The dashboard's look is in `public/admin/admin.css`, and the custom widget and
+upload helper are in `public/admin/admin.js`. Both depend on Decap's internal class
+names, so a Decap upgrade may need small fixes.
 
 ### 2. GitHub Pages (hosting)
 

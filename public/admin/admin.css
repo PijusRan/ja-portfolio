@@ -267,3 +267,120 @@ body a {
     border-right: none;
   }
 }
+
+/* ---------- Photo list field & multi-select library ---------- */
+.ja-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ja-photo {
+  position: relative;
+  aspect-ratio: 1;
+  background: #e4e1cd;
+}
+
+.ja-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ja-photo__actions {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+}
+
+.ja-photo__actions button {
+  font-family: system-ui, sans-serif;
+  border: 0;
+  border-radius: 0;
+  background: #111;
+  color: #f0eede;
+  width: 26px;
+  height: 26px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.ja-photos__empty {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+[data-ja-selected] {
+  outline: 4px solid #111;
+  outline-offset: -4px;
+  position: relative;
+}
+
+[data-ja-selected]::after {
+  content: '✓';
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  background: #111;
+  color: #f0eede;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.ja-multibar {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--paper);
+  border: 1px solid #111;
+  font-family: 'NATS', system-ui, sans-serif;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.ja-multibar button {
+  border: 0;
+  border-radius: 0;
+  background: #111;
+  color: #f0eede;
+  padding: 10px 16px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ja-multibar button:disabled {
+  background: #9a9788;
+  cursor: default;
+}
+
+.ja-photos__add {
+  border: 0;
+  border-radius: 0;
+  background: #111;
+  color: #f0eede;
+  padding: 10px 16px;
+  font-family: 'NATS', system-ui, sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 12px;
+  cursor: pointer;
+}

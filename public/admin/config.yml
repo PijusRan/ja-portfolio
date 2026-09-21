@@ -12,12 +12,12 @@ backend:
 
 local_backend: true
 
-# Fallback media location for anything outside the galleries collection below.
-# Each gallery instead stores its own photos alongside its entry (see
-# `media_folder: ''` / `path` on the collection), so Astro's content
-# collections can resolve and optimize them at build time via astro:assets.
+# One shared photo library: the Media tab, the gallery cover picker and the gallery
+# photo picker all use src/assets/uploads, and uploads from any of them land there.
+# Galleries store paths like `~/assets/uploads/photo.jpg` (the `~` alias is set in
+# tsconfig.json), which Astro resolves and optimises at build time via astro:assets.
 media_folder: src/assets/uploads
-public_folder: src/assets/uploads
+public_folder: ~/assets/uploads
 
 
 publish_mode: simple
@@ -30,8 +30,8 @@ collections:
     folder: src/content/galleries
     create: true
     path: '{{slug}}/index'
-    media_folder: ''
-    public_folder: './'
+    media_folder: /src/assets/uploads
+    public_folder: ~/assets/uploads
     slug: '{{slug}}'
     summary: '{{title}} · order {{order}}'
     thumbnail: coverImage
@@ -42,13 +42,12 @@ collections:
         name: coverImage
         widget: image
         allow_multiple: false
-        hint: Shown on the home page grid and the work page.
+        hint: Shown on the home page grid and the work page. Pick one from the library, or upload new ones there.
       - label: Photos
         name: photos
-        widget: image
-        allow_multiple: true
+        widget: photo-list
         required: false
-        hint: 'Click "Choose images" (or "Choose different image"), then Upload to add several files at once, or tick several existing ones and press "Choose selected".'
+        hint: 'Click "Add photos", tick as many as you like in the library (or upload new ones there first, several at once), then "Add selected".'
       - { label: Order, name: order, widget: number, value_type: int, min: 0, default: 0, hint: 'Lower numbers come first on the home and work pages.' }
       - { label: Brand, name: brand, widget: string, required: false, hint: 'Work page title, first line (e.g. "acne studios").' }
       - { label: Season, name: season, widget: string, required: false, hint: 'Work page title, second line (e.g. "2024 autumn/fall").' }
