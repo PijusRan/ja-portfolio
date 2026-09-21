@@ -1,5 +1,5 @@
 ---
-// One shared preview dialog. Any element with data-preview='[{"src","alt","caption"}]' opens it.
+// One shared preview dialog. Any element with data-preview='[{"src","alt"}]' opens it.
 ---
 
 <div class="lightbox" data-preview-dialog role="dialog" aria-modal="true" aria-label="Peržiūra" hidden>
@@ -7,15 +7,13 @@
   <button type="button" class="lightbox__nav lightbox__nav--prev" data-preview-prev aria-label="Ankstesnė nuotrauka">‹</button>
   <img class="lightbox__image" data-preview-image alt="" />
   <button type="button" class="lightbox__nav lightbox__nav--next" data-preview-next aria-label="Kita nuotrauka">›</button>
-  <p class="lightbox__caption" data-preview-caption></p>
 </div>
 
 <script>
-  type Photo = { src: string; alt: string; caption?: string };
+  type Photo = { src: string; alt: string };
 
   const dialog = document.querySelector<HTMLElement>('[data-preview-dialog]')!;
   const image = dialog.querySelector<HTMLImageElement>('[data-preview-image]')!;
-  const caption = dialog.querySelector<HTMLElement>('[data-preview-caption]')!;
   const closeButton = dialog.querySelector<HTMLElement>('[data-preview-close]')!;
   const prevButton = dialog.querySelector<HTMLElement>('[data-preview-prev]')!;
   const nextButton = dialog.querySelector<HTMLElement>('[data-preview-next]')!;
@@ -29,8 +27,6 @@
     const photo = photos[index];
     image.src = photo.src;
     image.alt = photo.alt;
-    caption.textContent = photo.caption ?? '';
-    caption.hidden = !photo.caption;
   }
 
   function open(from: HTMLElement) {

@@ -1,0 +1,269 @@
+/*
+ * Dashboard theme, matched to the site: cream paper, black ink, NATS uppercase,
+ * square corners, thin rules. Decap's CSS-in-JS class names end in a readable
+ * component label (e.g. "css-1abc-AppHeader"), so we match on that. The `body`
+ * prefix beats the specificity of Decap's own single-class rules.
+ */
+@font-face {
+  font-family: 'NATS';
+  src: url('NATS-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
+:root {
+  --paper: #f0eede;
+  --card: #f9f8ef;
+  --ink: #111;
+  --muted: #6f6e63;
+  --rule: #cfccb8;
+  --active: #e4e1cd;
+  --danger: #a3341f;
+}
+
+body,
+body input,
+body textarea,
+body select,
+body button {
+  font-family: 'NATS', system-ui, sans-serif;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+/* ---------- Header ---------- */
+body [class*='AppHeader-css'],
+body [class*='AppHeader-'] {
+  background: var(--paper);
+  border-bottom: 1px solid var(--ink);
+  box-shadow: none;
+}
+
+body [class*='AppHeaderButton'] {
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 13px;
+  border-radius: 0;
+  background: none;
+}
+
+body [class*='AppHeaderButton']:hover {
+  background: var(--active);
+  color: var(--ink);
+}
+
+body [class*='header-link-active'] {
+  color: var(--ink);
+  background: none;
+  box-shadow: inset 0 -2px 0 var(--ink);
+}
+
+body [class*='header-link-active'] svg,
+body [class*='AppHeaderButton'] svg {
+  color: inherit;
+  fill: currentColor;
+}
+
+/* ---------- Buttons ---------- */
+body [class*='-button-button'] {
+  border-radius: 0;
+  background: var(--ink);
+  color: var(--paper);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 12px;
+  font-weight: 400;
+  box-shadow: none;
+}
+
+body [class*='-button-button']:hover {
+  background: var(--muted);
+}
+
+/* Header nav buttons are also "-button-button"; keep them quiet */
+body [class*='AppHeaderButton'][class*='-button-button'] {
+  background: none;
+  color: var(--muted);
+}
+
+body [class*='header-link-active'][class*='-button-button'] {
+  color: var(--ink);
+}
+
+body [class*='ViewControlsButton'],
+body [class*='grayText'] {
+  background: none;
+  color: var(--muted);
+}
+
+body [class*='ViewControlsButton'] svg {
+  color: inherit;
+}
+
+/* ---------- Cards, sidebar, lists ---------- */
+body [class*='-card-card'],
+body [class*='ControlContainer'] [class*='Card'],
+body [class*='SidebarContainer'],
+body [class*='CollectionTopContainer'] {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body [class*='ListCard-card-card']:hover,
+body [class*='ListCardLink']:hover {
+  background: var(--active);
+}
+
+body [class*='ListCardTitle'] {
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-size: 14px;
+}
+
+body [class*='SidebarHeading'],
+body [class*='CollectionTopHeading'] {
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-weight: 400;
+}
+
+body [class*='CollectionTopDescription'] {
+  color: var(--muted);
+}
+
+body [class*='SidebarNavLink'] {
+  border-left: 3px solid transparent;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+body [class*='SidebarNavLink'].sidebar-active,
+body [class*='SidebarNavLink']:hover {
+  background: var(--active);
+  border-left-color: var(--ink);
+  color: var(--ink);
+}
+
+body [class*='SidebarNavLink'] svg,
+body [class*='AppHeaderNavLink'] svg {
+  color: inherit;
+}
+
+body [class*='SidebarNavLink'] svg *,
+body [class*='AppHeaderNavLink'] svg * {
+  fill: currentColor;
+}
+
+/* Grid view thumbnails */
+body [class*='CardsGrid'] [class*='-card-card'] {
+  overflow: hidden;
+}
+
+/* ---------- Inputs ---------- */
+body input,
+body textarea,
+body select,
+body [class*='SearchInput'],
+body [class*='InputContainer'],
+body [class*='ControlContainer'] {
+  border-radius: 0;
+}
+
+body select,
+body [class*='TextControl'],
+body input[type='text'],
+body input[type='number'],
+body textarea,
+body [class*='SearchContainer'] {
+  background: #fdfcf5;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body input:focus,
+body textarea:focus {
+  outline: 2px solid var(--ink);
+  outline-offset: 0;
+  border-color: var(--ink);
+}
+
+body [class*='SearchContainer'] input {
+  border: none;
+  background: none;
+}
+
+/* ---------- Editor ---------- */
+body [class*='ControlContainer'] label,
+body [class*='FieldLabel'] {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 12px;
+  color: var(--ink);
+  background: none !important;
+  border: none;
+  border-radius: 0;
+  font-weight: 400;
+}
+
+body [class*='ControlHint'] {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+body [class*='EditorContainer'],
+body [class*='EditorControlBar'],
+body [class*='ControlPaneContainer'] {
+  background: var(--paper);
+}
+
+body [class*='EditorControlBar'],
+body [class*='ToolbarContainer'],
+body [class*='EditorToolbar'] {
+  border-bottom: 1px solid var(--ink);
+  box-shadow: none;
+  background: var(--paper);
+}
+
+/* ---------- Media library & dialogs ---------- */
+body [class*='LibraryTop'],
+body [class*='MediaLibraryModal'],
+body [class*='StyledModal'] {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body [class*='StyledModal'] {
+  border: 1px solid var(--ink);
+  background: var(--paper);
+}
+
+body [class*='CardImage'],
+body [class*='Card-card'] img {
+  border-radius: 0;
+}
+
+/* ---------- Details ---------- */
+body ::selection {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+body a {
+  color: var(--ink);
+}
+
+@media (max-width: 800px) {
+  body [class*='SidebarContainer'] {
+    border-left: none;
+    border-right: none;
+  }
+}

@@ -25,16 +25,15 @@ async function buildSrcSet(src: ImageMetadata, widths: number[]) {
 }
 
 const photos = await Promise.all(
-  gallery.data.photos.map(async (photo) => {
+  gallery.data.photos.map(async (photo, i) => {
     const [thumb, thumbSrcset, full, fullSrcset] = await Promise.all([
-      getImage({ src: photo.src, width: 480, format: 'webp' }),
-      buildSrcSet(photo.src, THUMB_WIDTHS),
-      getImage({ src: photo.src, width: 1600, format: 'webp' }),
-      buildSrcSet(photo.src, FULL_WIDTHS),
+      getImage({ src: photo, width: 480, format: 'webp' }),
+      buildSrcSet(photo, THUMB_WIDTHS),
+      getImage({ src: photo, width: 1600, format: 'webp' }),
+      buildSrcSet(photo, FULL_WIDTHS),
     ]);
     return {
-      alt: photo.alt,
-      caption: photo.caption,
+      alt: `${gallery.data.title}, ${i + 1}`,
       thumb: { src: thumb.src, srcset: thumbSrcset },
       full: { src: full.src, srcset: fullSrcset },
     };

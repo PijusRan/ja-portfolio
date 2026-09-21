@@ -4,11 +4,8 @@ description: A rainy October wedding in the old town.
 coverImage: ./cover.jpg
 order: 10
 photos:
-  - src: ./photo-1.jpg
-    alt: Bride and groom walking through the old town
-    caption: Just married, Pilies Street
-  - src: ./photo-2.jpg
-    alt: Guests dancing at the reception
+  - ./photo-1.jpg
+  - ./photo-2.jpg
 ---
 
 Shot over a single afternoon in the Vilnius old town, this gallery captures a small

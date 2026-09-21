@@ -20,13 +20,8 @@ const galleries = defineCollection({
       layout: z.enum(['image-right', 'image-left', 'full', 'narrow-left', 'narrow-right']).default('image-right'),
       // CSS object-position for the cover crop, e.g. "50% 87%"
       focal: z.string().default('50% 50%'),
-      photos: z.array(
-        z.object({
-          src: image(),
-          alt: z.string(),
-          caption: z.string().optional(),
-        })
-      ),
+      // Plain list of images so several can be uploaded at once in the CMS
+      photos: z.array(image()).default([]),
     }),
 });
 

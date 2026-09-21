@@ -19,41 +19,50 @@ local_backend: true
 media_folder: src/assets/uploads
 public_folder: src/assets/uploads
 
+
 publish_mode: simple
 
 collections:
   - name: galleries
     label: Galleries
     label_singular: Gallery
+    description: Each gallery is one project. The cover appears on the home page and the work page.
     folder: src/content/galleries
     create: true
     path: '{{slug}}/index'
     media_folder: ''
-    public_folder: ''
+    public_folder: './'
     slug: '{{slug}}'
+    summary: '{{title}} · order {{order}}'
+    thumbnail: coverImage
+    sortable_fields: ['order', 'title']
     fields:
-      - { label: Title, name: title, widget: string }
-      - { label: Description, name: description, widget: text, required: false }
-      - label: Cover Image
+      - { label: Title, name: title, widget: string, hint: 'Internal name, e.g. "acne studios 2024 autumn/fall".' }
+      - label: Cover image
         name: coverImage
         widget: image
-        hint: Shown on the homepage gallery grid.
-      - { label: Order, name: order, widget: number, default: 0, hint: Lower numbers appear first on the homepage and work page. }
+        allow_multiple: false
+        hint: Shown on the home page grid and the work page.
+      - label: Photos
+        name: photos
+        widget: image
+        allow_multiple: true
+        required: false
+        hint: 'Click "Choose images" (or "Choose different image"), then Upload to add several files at once, or tick several existing ones and press "Choose selected".'
+      - { label: Order, name: order, widget: number, value_type: int, min: 0, default: 0, hint: 'Lower numbers come first on the home and work pages.' }
       - { label: Brand, name: brand, widget: string, required: false, hint: 'Work page title, first line (e.g. "acne studios").' }
       - { label: Season, name: season, widget: string, required: false, hint: 'Work page title, second line (e.g. "2024 autumn/fall").' }
       - label: Work page layout
         name: layout
         widget: select
         default: image-right
-        options: [image-right, image-left, full, narrow-left, narrow-right]
-        hint: Which side the cover sits on in the work page row (full = full width).
-      - { label: Cover focal point, name: focal, widget: string, default: '50% 50%', hint: 'CSS object-position for cropping, e.g. "50% 87%".' }
-      - label: Photos
-        name: photos
-        widget: list
-        summary: '{{fields.alt}}'
-        fields:
-          - { label: Photo, name: src, widget: image }
-          - { label: Alt text, name: alt, widget: string, hint: Describe the photo for accessibility and SEO. }
-          - { label: Caption, name: caption, widget: string, required: false }
-      - { label: Story (optional), name: body, widget: markdown, required: false }
+        options:
+          - { label: Image on the right, value: image-right }
+          - { label: Image on the left, value: image-left }
+          - { label: Full width, value: full }
+          - { label: Narrow image on the left, value: narrow-left }
+          - { label: Narrow image on the right, value: narrow-right }
+        hint: How this project is laid out on the work page.
+      - { label: Cover crop, name: focal, widget: string, default: '50% 50%', required: false, hint: 'Which part of the cover stays visible when cropped, as "x% y%". 50% 50% is the centre; use a higher second number to show more of the bottom.' }
+      - { label: Description, name: description, widget: text, required: false }
+      - { label: Story, name: body, widget: markdown, required: false }
