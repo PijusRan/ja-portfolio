@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci --legacy-peer-deps
+      - run: npm ci
       - run: npx astro build
         env:
           GITHUB_PAGES: 'true'
