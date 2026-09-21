@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import ProjectRow from '../components/ProjectRow.astro';
+import Preview from '../components/Preview.astro';
 import { site } from '../data/site';
 
 const galleries = (await getCollection('galleries')).sort((a, b) => a.data.order - b.data.order);
@@ -12,4 +13,5 @@ const galleries = (await getCollection('galleries')).sort((a, b) => a.data.order
   <main>
     {galleries.map((gallery, i) => <ProjectRow gallery={gallery} index={i} />)}
   </main>
+  <Preview />
 </Layout>

@@ -1,0 +1,82 @@
+---
+// One shared preview dialog. Any element with data-preview='[{"src","alt","caption"}]' opens it.
+---
+
+<div class="lightbox" data-preview-dialog role="dialog" aria-modal="true" aria-label="Peržiūra" hidden>
+  <button type="button" class="lightbox__close" data-preview-close aria-label="Uždaryti">×</button>
+  <button type="button" class="lightbox__nav lightbox__nav--prev" data-preview-prev aria-label="Ankstesnė nuotrauka">‹</button>
+  <img class="lightbox__image" data-preview-image alt="" />
+  <button type="button" class="lightbox__nav lightbox__nav--next" data-preview-next aria-label="Kita nuotrauka">›</button>
+  <p class="lightbox__caption" data-preview-caption></p>
+</div>
+
+<script>
+  type Photo = { src: string; alt: string; caption?: string };
+
+  const dialog = document.querySelector<HTMLElement>('[data-preview-dialog]')!;
+  const image = dialog.querySelector<HTMLImageElement>('[data-preview-image]')!;
+  const caption = dialog.querySelector<HTMLElement>('[data-preview-caption]')!;
+  const closeButton = dialog.querySelector<HTMLElement>('[data-preview-close]')!;
+  const prevButton = dialog.querySelector<HTMLElement>('[data-preview-prev]')!;
+  const nextButton = dialog.querySelector<HTMLElement>('[data-preview-next]')!;
+
+  let photos: Photo[] = [];
+  let index = 0;
+  let trigger: HTMLElement | null = null;
+
+  function show(i: number) {
+    index = (i + photos.length) % photos.length;
+    const photo = photos[index];
+    image.src = photo.src;
+    image.alt = photo.alt;
+    caption.textContent = photo.caption ?? '';
+    caption.hidden = !photo.caption;
+  }
+
+  function open(from: HTMLElement) {
+    try {
+      photos = JSON.parse(from.dataset.preview ?? '[]');
+    } catch {
+      return;
+    }
+    if (!photos.length) return;
+    trigger = from;
+    const multiple = photos.length > 1;
+    prevButton.hidden = nextButton.hidden = !multiple;
+    show(0);
+    dialog.hidden = false;
+    document.body.style.overflow = 'hidden';
+    closeButton.focus();
+  }
+
+  function close() {
+    dialog.hidden = true;
+    image.removeAttribute('src');
+    document.body.style.overflow = '';
+    trigger?.focus();
+    trigger = null;
+  }
+
+  document.addEventListener('click', (e) => {
+    const from = (e.target as Element).closest<HTMLElement>('[data-preview]');
+    if (from) {
+      e.preventDefault();
+      open(from);
+    }
+  });
+
+  // Click on the backdrop (not the image or controls) closes the preview
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) close();
+  });
+  closeButton.addEventListener('click', close);
+  prevButton.addEventListener('click', () => show(index - 1));
+  nextButton.addEventListener('click', () => show(index + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (dialog.hidden) return;
+    if (e.key === 'Escape') close();
+    if (photos.length > 1 && e.key === 'ArrowRight') show(index + 1);
+    if (photos.length > 1 && e.key === 'ArrowLeft') show(index - 1);
+  });
+</script>

@@ -1,15 +1,16 @@
 ---
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
-import { withBase } from '../lib/url';
+import { getPreviewPhotos } from '../lib/preview';
 
 const galleries = (await getCollection('galleries')).sort((a, b) => a.data.order - b.data.order).slice(0, 21);
+const previews = await Promise.all(galleries.map(getPreviewPhotos));
 ---
 
 <div class="work-grid">
   {
     galleries.map((gallery, i) => (
-      <a href={withBase(`/gallery/${gallery.id}/`)} class="work-grid__tile">
+      <button type="button" class="work-grid__tile" data-preview={JSON.stringify(previews[i])} aria-haspopup="dialog">
         <Image
           src={gallery.data.coverImage}
           width={320}
@@ -19,7 +20,7 @@ const galleries = (await getCollection('galleries')).sort((a, b) => a.data.order
           loading="lazy"
           style={`object-position: ${gallery.data.focal}`}
         />
-      </a>
+      </button>
     ))
   }
 </div>
@@ -35,6 +36,10 @@ const galleries = (await getCollection('galleries')).sort((a, b) => a.data.order
 
   .work-grid__tile {
     display: block;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
     flex-shrink: 0;
     width: 158.857px;
     height: 158.857px;

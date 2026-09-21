@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import { withBase } from '../lib/url';
+import { getPreviewPhotos } from '../lib/preview';
 
 interface Props {
   gallery: CollectionEntry<'galleries'>;
@@ -10,6 +10,7 @@ interface Props {
 
 const { gallery, index } = Astro.props;
 const { brand, season, title, layout, focal, coverImage } = gallery.data;
+const preview = JSON.stringify(await getPreviewPhotos(gallery));
 const number = String(index + 1).padStart(2, '0');
 const isFull = layout === 'full';
 const sizes = isFull
@@ -21,9 +22,9 @@ const sizes = isFull
   {
     isFull ? (
       <>
-        <a class="project__image" href={withBase(`/gallery/${gallery.id}/`)}>
+        <button type="button" class="project__image" data-preview={preview} aria-haspopup="dialog">
           <Image src={coverImage} width={2400} {sizes} alt={title} loading={index < 2 ? 'eager' : 'lazy'} style={`object-position: ${focal}`} />
-        </a>
+        </button>
         <div class="project__caption h2">
           <p>{number}</p>
           <p>{brand ?? title}</p>
@@ -40,9 +41,9 @@ const sizes = isFull
             {season}
           </p>
         </div>
-        <a class="project__image" href={withBase(`/gallery/${gallery.id}/`)}>
+        <button type="button" class="project__image" data-preview={preview} aria-haspopup="dialog">
           <Image src={coverImage} width={1200} {sizes} alt={title} loading={index < 2 ? 'eager' : 'lazy'} style={`object-position: ${focal}`} />
-        </a>
+        </button>
       </>
     )
   }
@@ -57,6 +58,10 @@ const sizes = isFull
 
   .project__image {
     display: block;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
     height: 543px;
     flex: 1 0 0;
     min-width: 1px;

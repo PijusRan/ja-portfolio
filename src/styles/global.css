@@ -77,7 +77,8 @@ a {
   text-decoration: none;
 }
 
-a:hover {
+a:hover,
+[data-preview]:hover {
   opacity: 0.6;
 }
 
@@ -164,6 +165,35 @@ p {
   justify-content: center;
   z-index: 50;
   padding: 2rem;
+}
+
+.lightbox[hidden] {
+  display: none;
+}
+
+.lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #f2f2f2;
+  font-size: 3rem;
+  line-height: 1;
+  padding: 1rem;
+  cursor: pointer;
+}
+
+.lightbox__nav[hidden] {
+  display: none;
+}
+
+.lightbox__nav--prev {
+  left: 0.5rem;
+}
+
+.lightbox__nav--next {
+  right: 0.5rem;
 }
 
 .lightbox__image {
