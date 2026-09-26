@@ -46,6 +46,46 @@
   CMS.registerPreviewTemplate('galleries', GalleryPreview);
 })();
 
+/* Live preview for the home page hero: the two photos behind the title. */
+(function () {
+  var h = window.h;
+  var CMS = window.CMS;
+  if (!CMS || !h) return;
+
+  var HeroPreview = function (props) {
+    var entry = props.entry;
+    var data = entry.get('data');
+    var images = data.get('images');
+    var list = images && typeof images.toJS === 'function' ? images.toJS() : [];
+    var rotate = !!data.get('rotate');
+
+    function slot(item, className) {
+      var url = item && item.image ? String(props.getAsset(item.image)) : '';
+      return h(
+        'div',
+        { className: 'hero-slot ' + className },
+        url
+          ? h('img', { src: url, alt: item.alt || '', style: { objectPosition: item.focal || '50% 50%' } })
+          : h('div', { className: 'empty' }, 'No image yet')
+      );
+    }
+
+    return h(
+      'div',
+      { className: 'preview' },
+      h('p', { className: 'label' }, 'Home page hero' + (rotate && list.length > 2 ? ' (first pair shown, rotates through more)' : '')),
+      h(
+        'div',
+        { className: 'hero-preview' },
+        slot(list[0], 'hero-slot--right'),
+        slot(list[1], 'hero-slot--left')
+      )
+    );
+  };
+
+  CMS.registerPreviewTemplate('hero', HeroPreview);
+})();
+
 /*
  * Multi-file upload for the media library.
  * Decap's Upload button only accepts one file, and it persists only the first file of any

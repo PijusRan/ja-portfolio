@@ -23,6 +23,42 @@ public_folder: ~/assets/uploads
 publish_mode: simple
 
 collections:
+  - name: settings
+    label: Home page
+    files:
+      - name: hero
+        label: Hero
+        file: src/content/hero/index.md
+        description: 'The two photos behind the title on the home page.'
+        media_folder: /src/assets/uploads
+        public_folder: ~/assets/uploads
+        fields:
+          - label: Images
+            name: images
+            widget: list
+            min: 2
+            summary: '{{fields.image}}'
+            hint: >-
+              Drag to reorder. #1 fills the large photo (top right), #2 the small one
+              (bottom left). With rotation on, extra images take over the same two
+              spots in pairs (#3+#4, then #5+#6, and so on).
+            fields:
+              - { label: Image, name: image, widget: image, allow_multiple: false, hint: 'Pick one from the library, or upload a new one there.' }
+              - { label: Crop, name: focal, widget: string, default: '50% 50%', hint: 'Which part of the photo stays visible when cropped, as "x% y%". 50% 50% is the centre; use a higher second number to show more of the bottom.' }
+              - { label: Alt text, name: alt, widget: string, required: false, hint: 'Describes the photo for screen readers and search engines.' }
+          - label: Rotate through images (experimental)
+            name: rotate
+            widget: boolean
+            default: false
+            hint: 'Only takes effect with more than 2 images above. Slowly crossfades between them.'
+          - label: Rotation interval (seconds)
+            name: interval
+            widget: number
+            value_type: int
+            min: 3
+            default: 6
+            hint: 'Only used when rotation is on.'
+
   - name: galleries
     label: Galleries
     label_singular: Gallery
