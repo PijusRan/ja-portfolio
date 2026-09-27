@@ -8,6 +8,12 @@
   font-family: 'NATS';
   src: url('NATS-Regular.ttf') format('truetype');
   font-display: swap;
+  /* NATS is a Telugu font: its line box is ~2.1em tall (ascent 1294 + descent 756 per 970
+     units) while Latin caps are only ~0.5em, which left a big gap under every line. These
+     overrides size the box to the Latin glyphs (accents reach ~0.65em, descenders ~0.16em). */
+  ascent-override: 75%;
+  descent-override: 25%;
+  line-gap-override: 0%;
 }
 
 :root {
@@ -253,7 +259,6 @@ body [class*='EditorToolbar'] {
 
 /* ---------- Media library & dialogs ---------- */
 body [class*='LibraryTop'],
-body [class*='MediaLibraryModal'],
 body [class*='StyledModal'] {
   border-radius: 0;
   box-shadow: none;
@@ -264,8 +269,7 @@ body [class*='StyledModal'] {
   background: var(--paper);
 }
 
-body [class*='CardImage'],
-body [class*='Card-card'] img {
+body [class*='CardImage'] {
   border-radius: 0;
 }
 
@@ -317,7 +321,8 @@ body a {
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
 }
 
-.ja-photo__actions button {
+.ja-photo__actions button,
+.ja-imagelist__actions button {
   font-family: system-ui, sans-serif;
   border: 0;
   border-radius: 0;
@@ -337,8 +342,6 @@ body a {
 }
 
 [data-ja-selected] {
-  outline: 4px solid #111;
-  outline-offset: -4px;
   position: relative;
 }
 
@@ -355,6 +358,18 @@ body a {
   align-items: center;
   justify-content: center;
   font-size: 18px;
+}
+
+/* Bulk-add mode (body.ja-bulk, set by admin.js): Decap's own "Choose selected" / "Delete
+   selected" never get a selection here, so hide them; and keep cards clickable while the
+   virtualised grid is scrolling (it sets pointer-events: none inline during scroll). */
+body.ja-bulk [class*='StyledModal'] [class*='InsertButton'],
+body.ja-bulk [class*='StyledModal'] [class*='DeleteButton'] {
+  display: none;
+}
+
+body.ja-bulk [class*='StyledModal'] [style*='pointer-events'] {
+  pointer-events: auto !important;
 }
 
 .ja-multibar {
@@ -390,7 +405,8 @@ body a {
   cursor: default;
 }
 
-.ja-photos__add {
+.ja-photos__add,
+.ja-imagelist__add {
   border: 0;
   border-radius: 0;
   background: #111;
@@ -401,4 +417,58 @@ body a {
   letter-spacing: 0.04em;
   font-size: 14px;
   cursor: pointer;
+}
+
+/* ---------- Hero image-list field (bulk-add with per-image crop & alt text) ---------- */
+.ja-imagelist {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.ja-imagelist__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+}
+
+.ja-imagelist__item img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  display: block;
+  background: #e4e1cd;
+}
+
+.ja-imagelist__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ja-imagelist__fields input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 7px;
+  font-family: 'NATS', system-ui, sans-serif;
+  font-size: 13px;
+  background: #fdfcf5;
+  border: 1px solid var(--ink);
+  border-radius: 0;
+}
+
+.ja-imagelist__actions {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+}
+
+.ja-imagelist__empty {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 15px;
 }

@@ -20,8 +20,13 @@ const galleries = defineCollection({
       layout: z.enum(['image-right', 'image-left', 'full', 'narrow-left', 'narrow-right']).default('image-right'),
       // CSS object-position for the cover crop, e.g. "50% 87%"
       focal: z.string().default('50% 50%'),
-      // Extra photos, picked from the shared library (cover is added automatically)
-      photos: z.array(image()).default([]),
+      // Extra photos, picked from the shared library (cover is added automatically).
+      // `.nullable()` + the filter below tolerate a stray null the admin's photo-list
+      // widget can occasionally leave behind (see the `hero.images` comment for why).
+      photos: z
+        .array(image().nullable())
+        .default([])
+        .transform((items) => items.filter((item): item is NonNullable<typeof item> => item != null)),
     }),
 });
 
@@ -36,16 +41,22 @@ const hero = defineCollection({
     z.object({
       // Picked and ordered in the admin. #1 fills the large top-right slot, #2 the
       // small bottom-left slot; with rotation on, extra images take over in the same pairing.
+      // `.nullable()` + the filter below tolerate a stray null the admin's image-list widget
+      // can occasionally leave behind when a reorder/remove click races a save; without this,
+      // one bad entry would fail the whole collection instead of just being dropped.
       images: z
         .array(
-          z.object({
-            image: image(),
-            // CSS object-position for this image's crop, e.g. "50% 87%"
-            focal: z.string().default('50% 50%'),
-            alt: z.string().default(''),
-          })
+          z
+            .object({
+              image: image(),
+              // CSS object-position for this image's crop, e.g. "50% 87%"
+              focal: z.string().default('50% 50%'),
+              alt: z.string().default(''),
+            })
+            .nullable()
         )
-        .min(2),
+        .transform((items) => items.filter((item): item is NonNullable<typeof item> => item != null))
+        .refine((items) => items.length >= 2, { message: 'The hero needs at least 2 images.' }),
       rotate: z.boolean().default(false),
       // Seconds between rotations; only used when `rotate` is on
       interval: z.number().min(3).default(6),

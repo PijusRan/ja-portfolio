@@ -35,17 +35,13 @@ collections:
         fields:
           - label: Images
             name: images
-            widget: list
-            min: 2
-            summary: '{{fields.image}}'
+            widget: image-list
             hint: >-
-              Drag to reorder. #1 fills the large photo (top right), #2 the small one
-              (bottom left). With rotation on, extra images take over the same two
-              spots in pairs (#3+#4, then #5+#6, and so on).
-            fields:
-              - { label: Image, name: image, widget: image, allow_multiple: false, hint: 'Pick one from the library, or upload a new one there.' }
-              - { label: Crop, name: focal, widget: string, default: '50% 50%', hint: 'Which part of the photo stays visible when cropped, as "x% y%". 50% 50% is the centre; use a higher second number to show more of the bottom.' }
-              - { label: Alt text, name: alt, widget: string, required: false, hint: 'Describes the photo for screen readers and search engines.' }
+              Click "Add images", tick as many as you like in the library (or upload new ones
+              there first, several at once), then "Add selected". Use ‹ › to reorder — keep at
+              least 2. #1 fills the large photo (top right), #2 the small one (bottom left).
+              With rotation on, extra images take over the same two spots in pairs (#3+#4, then
+              #5+#6, and so on).
           - label: Rotate through images (experimental)
             name: rotate
             widget: boolean
