@@ -1,5 +1,6 @@
 ---
 import { site } from '../data/site';
+import { withBase } from '../lib/url';
 ---
 
 <footer class="footer">
@@ -12,6 +13,7 @@ import { site } from '../data/site';
     <div class="footer__socials">
       <a href={`mailto:${site.email}`}>Email</a>
       <a href={site.instagram} target="_blank" rel="noopener noreferrer">Insta</a>
+      <a href={withBase('/atsiliepimai/')}>Atsiliepimai</a>
     </div>
     <p>Made by</p>
   </div>

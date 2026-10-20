@@ -1,0 +1,27 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { site } from '../../data/site';
+import { withBase } from '../../lib/url';
+---
+
+<Layout title={`Ačiū — ${site.name}`} theme="dark" noindex>
+  <h1 class="page-title h1">Ačiū</h1>
+  <main class="thanks">
+    <h2 class="h2">
+      Atsiliepimas išsiųstas. <a href={withBase('/')}>Grįžti į pradžią</a>
+    </h2>
+  </main>
+</Layout>
+
+<style>
+  .thanks {
+    display: flex;
+    justify-content: center;
+    padding: 0 40px 300px;
+    text-align: center;
+  }
+
+  .thanks .h2 {
+    line-height: 1.25;
+  }
+</style>

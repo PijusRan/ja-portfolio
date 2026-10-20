@@ -1,0 +1,158 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { site } from '../data/site';
+import { withBase } from '../lib/url';
+---
+
+<Layout title={`Atsiliepimai — ${site.name}`} theme="dark" noindex>
+  <h1 class="page-title h1">Atsiliepimai</h1>
+  <main>
+    <form
+      class="feedback"
+      name="feedback"
+      method="POST"
+      action={withBase('/atsiliepimai/aciu/')}
+      enctype="multipart/form-data"
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+    >
+      <input type="hidden" name="form-name" value="feedback" />
+      <p class="feedback__trap" aria-hidden="true">
+        <label>Nepildyti: <input name="bot-field" tabindex="-1" autocomplete="off" /></label>
+      </p>
+
+      <fieldset class="feedback__field">
+        <legend>Tipas</legend>
+        <label class="feedback__choice">
+          <input type="radio" name="type" value="Klaida" checked /> Klaida
+        </label>
+        <label class="feedback__choice">
+          <input type="radio" name="type" value="Pasiūlymas" /> Pasiūlymas
+        </label>
+      </fieldset>
+
+      <label class="feedback__field">
+        <span>Puslapis</span>
+        <input type="text" name="page" placeholder="pvz. Darbai, Apie mane" />
+      </label>
+
+      <label class="feedback__field">
+        <span>Aprašymas</span>
+        <textarea name="description" rows="8" required></textarea>
+      </label>
+
+      <label class="feedback__field">
+        <span>Ekrano nuotrauka (nebūtina)</span>
+        <input type="file" name="screenshot" accept="image/*" />
+      </label>
+
+      <label class="feedback__field">
+        <span>El. paštas (nebūtina)</span>
+        <input type="email" name="email" />
+      </label>
+
+      <button class="feedback__submit h2" type="submit">Siųsti</button>
+    </form>
+  </main>
+</Layout>
+
+<style>
+  .feedback {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 100px 300px;
+    box-sizing: content-box;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    text-transform: none;
+  }
+
+  .feedback__trap {
+    position: absolute;
+    left: -9999px;
+  }
+
+  .feedback__field {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+  }
+
+  .feedback__field > span,
+  .feedback__field > legend {
+    padding: 0;
+    font-family: var(--font-display);
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .feedback__choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 24px;
+  }
+
+  .feedback input[type='text'],
+  .feedback input[type='email'],
+  .feedback textarea {
+    width: 100%;
+    padding: 12px 0;
+    border: 0;
+    border-bottom: 1px solid var(--divider);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-transform: none;
+  }
+
+  .feedback textarea {
+    resize: vertical;
+  }
+
+  .feedback input:focus-visible,
+  .feedback textarea:focus-visible {
+    outline: 1px solid var(--fg);
+    outline-offset: 4px;
+  }
+
+  .feedback input[type='file'] {
+    font: inherit;
+    color: inherit;
+  }
+
+  .feedback__submit {
+    align-self: flex-start;
+    padding: 20px 0 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    line-height: 1.25;
+    cursor: pointer;
+  }
+
+  .feedback__submit:hover {
+    opacity: 0.6;
+  }
+
+  @media (max-width: 1023px) {
+    .feedback {
+      padding: 0 40px 200px;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .feedback {
+      padding: 0 20px 150px;
+    }
+  }
+</style>

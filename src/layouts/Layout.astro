@@ -10,9 +10,16 @@ interface Props {
   description?: string;
   /** cream (home, default), light (work), dark (about) */
   theme?: 'cream' | 'light' | 'dark';
+  /** keep the page out of search results */
+  noindex?: boolean;
 }
 
-const { title, description = 'Justas Andžius, fotografas', theme = 'cream' } = Astro.props;
+const {
+  title,
+  description = 'Justas Andžius, fotografas',
+  theme = 'cream',
+  noindex = false,
+} = Astro.props;
 ---
 
 <html lang="lt">
@@ -21,6 +28,7 @@ const { title, description = 'Justas Andžius, fotografas', theme = 'cream' } = 
     <link rel="icon" href={withBase('/favicon.ico')} sizes="any" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta name="generator" content={Astro.generator} />
     <link
       rel="preload"
