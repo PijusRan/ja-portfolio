@@ -1,13 +1,31 @@
+/* Montserrat SemiBold, sized like the site's display font (see src/styles/global.css). */
 @font-face {
-  font-family: 'NATS';
-  src: url('NATS-Regular.ttf') format('truetype');
+  font-family: 'Montserrat';
+  src: url('montserrat-latin-ext-600-normal.woff2') format('woff2');
+  font-display: swap;
+  size-adjust: 72%;
+  ascent-override: 185.2%;
+  descent-override: 108.2%;
+  line-gap-override: 0%;
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('montserrat-latin-600-normal.woff2') format('woff2');
+  font-display: swap;
+  size-adjust: 72%;
+  ascent-override: 185.2%;
+  descent-override: 108.2%;
+  line-gap-override: 0%;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 body {
   margin: 0;
   background: #fff;
   color: #000;
-  font-family: 'NATS', system-ui, sans-serif;
+  font-family: 'Montserrat', system-ui, sans-serif;
   font-size: 14px;
   text-transform: uppercase;
 }
@@ -130,6 +148,52 @@ body {
   left: 40px;
   width: 110px;
   height: 140px;
+}
+
+.about-preview {
+  display: flex;
+  align-items: flex-start;
+  gap: 32px;
+}
+
+.about-preview__image,
+.about-preview__bio {
+  flex: 1 0 0;
+  min-width: 1px;
+}
+
+.about-preview__image {
+  aspect-ratio: 1;
+  background: #eee;
+  overflow: hidden;
+}
+
+.about-preview__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.about-preview__image .empty {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 11px;
+}
+
+/* Matches the bio on the real page: sentence case, body sizing */
+.about-preview__bio {
+  font-size: 15px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.about-preview__bio p {
+  margin: 0 0 1em;
 }
 
 .photos {

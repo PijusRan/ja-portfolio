@@ -36,7 +36,7 @@ Each page picks a colour theme: cream (home), white (work), black (about).
 ├── src/
 │   ├── assets/
 │   │   ├── uploads/               # Shared photo library (Media tab + all galleries)
-│   │   ├── fonts/                 # NATS and Crimson Text (self-hosted)
+│   │   ├── fonts/                 # Montserrat and Crimson Text (self-hosted)
 │   │   └── site/                  # Hero images, about portrait, arrow icon
 │   ├── components/
 │   │   ├── Header.astro, Footer.astro
@@ -160,9 +160,12 @@ settings are needed. Every push (including CMS commits) triggers a rebuild.
 
 ## Fonts
 
-NATS (Latin, Google Fonts, OFL) is the display font and Crimson Text is used for
-the about-page bio. Both are self-hosted in `src/assets/fonts/`; a copy of NATS
-for the CMS lives in `public/admin/`.
+Montserrat SemiBold (Google Fonts, OFL) is the display font and Crimson Text is used
+for the about-page bio. Both are self-hosted in `src/assets/fonts/` with Latin and
+Latin-ext files, so Lithuanian letters (ą č ę ė į š ų ū ž) work; a copy of Montserrat
+for the CMS lives in `public/admin/`. Montserrat replaced NATS, which is missing most
+Lithuanian letters; the `size-adjust`/`*-override` descriptors in `global.css` keep
+NATS's sizing so the layout didn't change.
 
 ## Adding a gallery
 

@@ -152,6 +152,51 @@
   CMS.registerPreviewTemplate('hero', HeroPreview);
 })();
 
+/* Live preview for the About page: the portrait beside the bio. */
+(function () {
+  var h = window.h;
+  var CMS = window.CMS;
+  var createClass = window.createClass;
+  if (!CMS || !h || !createClass) return;
+
+  var AboutPreview = createClass({
+    componentWillUnmount: function () {
+      window.__ja.stopPolling(this);
+    },
+    render: function () {
+      var props = this.props;
+      var data = props.entry.get('data');
+      var image = data.get('image');
+      var resolved = image ? window.__ja.assetUrl(props.getAsset, image) : { url: '', pending: false };
+
+      var self = this;
+      setTimeout(function () {
+        window.__ja.pollUntilReady(self, resolved.pending);
+      }, 0);
+
+      return h(
+        'div',
+        { className: 'preview' },
+        h('p', { className: 'label' }, 'About page'),
+        h(
+          'div',
+          { className: 'about-preview' },
+          h(
+            'div',
+            { className: 'about-preview__image' },
+            resolved.url
+              ? h('img', { src: resolved.url, alt: data.get('alt') || '', style: { objectPosition: data.get('focal') || '50% 50%' } })
+              : h('div', { className: 'empty' }, 'No image yet')
+          ),
+          h('div', { className: 'about-preview__bio' }, props.widgetFor('body'))
+        )
+      );
+    },
+  });
+
+  CMS.registerPreviewTemplate('about', AboutPreview);
+})();
+
 /*
  * Multi-file upload for the media library.
  * Decap's Upload button only accepts one file, and it persists only the first file of any

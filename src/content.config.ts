@@ -63,4 +63,20 @@ const hero = defineCollection({
     }),
 });
 
-export const collections = { galleries, hero };
+const about = defineCollection({
+  // Single entry like `hero`: the portrait in the frontmatter, the bio as the markdown body.
+  loader: glob({
+    pattern: 'index.md',
+    base: './src/content/about',
+    generateId: () => 'index',
+  }),
+  schema: ({ image }) =>
+    z.object({
+      image: image(),
+      // CSS object-position for the portrait's crop, e.g. "50% 87%"
+      focal: z.string().default('50% 50%'),
+      alt: z.string().default(''),
+    }),
+});
+
+export const collections = { galleries, hero, about };

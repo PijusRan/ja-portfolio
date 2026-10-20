@@ -1,8 +1,13 @@
 ---
 import { Image } from 'astro:assets';
+import { getEntry, render } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import portrait from '../assets/site/about-portrait.jpg';
 import { site } from '../data/site';
+
+const about = await getEntry('about', 'index');
+if (!about) throw new Error('Missing src/content/about/index.md');
+const { image, focal, alt } = about.data;
+const { Content } = await render(about);
 ---
 
 <Layout title={`Apie mane — ${site.name}`} theme="dark">
@@ -11,19 +16,19 @@ import { site } from '../data/site';
     <div class="about">
       <div class="about__image">
         <Image
-          src={portrait}
+          src={image}
           width={1000}
           sizes="(min-width: 1024px) 461px, (min-width: 640px) 560px, 335px"
-          alt="Justas Andžius"
+          alt={alt}
           loading="eager"
+          style={`object-position: ${focal}`}
         />
       </div>
-      <!-- TODO: placeholder copy from the Figma design; replace with the real bio -->
-      <p class="about__bio">lab dein viseim</p>
+      <div class="about__bio"><Content /></div>
     </div>
     <div class="cta">
       <h2 class="h2">
-        Papildomai informacijai susisiekite
+        Papildomai informacijai susisiekite{' '}
         <a href={`mailto:${site.email}`}>{site.email}</a>
       </h2>
     </div>
@@ -57,10 +62,24 @@ import { site } from '../data/site';
   .about__bio {
     padding-right: 100px;
     font-family: var(--font-body);
-    font-size: 18px;
-    line-height: 1.1;
+    font-size: var(--text-bio);
+    line-height: 1.4;
     letter-spacing: -0.02em;
     text-transform: none;
+  }
+
+  /* The bio is rendered markdown (edited in the admin) */
+  .about__bio :global(p) {
+    margin: 0 0 1em;
+  }
+
+  .about__bio :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .about__bio :global(a) {
+    color: inherit;
+    text-decoration: underline;
   }
 
   .cta {
@@ -69,6 +88,11 @@ import { site } from '../data/site';
     padding: 300px 80px;
     border-top: 1px solid var(--divider);
     text-align: center;
+  }
+
+  /* Wraps onto several lines on narrow screens; .h2's 0.8 line-height is too tight for that */
+  .cta .h2 {
+    line-height: 1.25;
   }
 
   @media (max-width: 1023px) {

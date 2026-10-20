@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import natsFont from '../assets/fonts/NATS-Regular.ttf?url';
+import displayFont from '../assets/fonts/montserrat-latin-600-normal.woff2?url';
 import { withBase } from '../lib/url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
@@ -24,9 +24,9 @@ const { title, description = 'Justas Andžius, fotografas', theme = 'cream' } = 
     <meta name="generator" content={Astro.generator} />
     <link
       rel="preload"
-      href={natsFont}
+      href={displayFont}
       as="font"
-      type="font/ttf"
+      type="font/woff2"
       crossorigin
     />
     <title>{title}</title>

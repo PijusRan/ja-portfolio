@@ -24,7 +24,7 @@ publish_mode: simple
 
 collections:
   - name: settings
-    label: Home page
+    label: Pages
     files:
       - name: hero
         label: Hero
@@ -54,6 +54,17 @@ collections:
             min: 3
             default: 6
             hint: 'Only used when rotation is on.'
+      - name: about
+        label: Apie mane
+        file: src/content/about/index.md
+        description: 'The photo and text on the About page.'
+        media_folder: /src/assets/uploads
+        public_folder: ~/assets/uploads
+        fields:
+          - { label: Image, name: image, widget: image, allow_multiple: false, hint: 'Pick one from the library, or upload a new one there.' }
+          - { label: Crop, name: focal, widget: string, default: '50% 50%', hint: 'Which part of the photo stays visible when cropped, as "x% y%". 50% 50% is the centre; use a higher second number to show more of the bottom.' }
+          - { label: Alt text, name: alt, widget: string, required: false, hint: 'Describes the photo for screen readers and search engines.' }
+          - { label: Text, name: body, widget: markdown, buttons: [bold, italic, link], editor_components: [], hint: 'Leave an empty line between paragraphs.' }
 
   - name: galleries
     label: Galleries
