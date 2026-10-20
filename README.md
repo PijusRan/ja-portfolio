@@ -106,17 +106,22 @@ names (`src/data/site.ts`).
   terminal and `npm run dev` in another, then open `/admin`. Changes,
   including uploaded photos, are written straight to disk (entries to
   `src/content/galleries/<slug>/`, photos to `src/assets/uploads/`).
-- **Production editing**: the CMS uses the `github` backend, so the
-  photographer logs in with GitHub to edit content on the live site. This needs
-  an OAuth app and a small proxy (neither Vercel nor GitHub Pages provides one):
-  1. Create a GitHub OAuth App (Settings → Developer settings) with callback
-     URL `https://api.netlify.com/auth/done` (Netlify's OAuth proxy is free to
-     use even when hosting elsewhere) or deploy a
-     [self-hosted OAuth provider](https://decapcms.org/docs/external-oauth-clients/).
-  2. Update `public/admin/config.yml`: replace the `YOUR_GITHUB_USERNAME/ja-portfolio`
-     placeholder in `repo` with the real `owner/repo`, set `branch` to the
-     deployed branch (currently `main`, while this repo's branch is `master`),
-     and set `base_url` if self-hosting the OAuth provider.
+- **Production editing**: logins go through [DecapBridge](https://decapbridge.com),
+  so editors sign in with email/password or Google/Microsoft and don't need a
+  GitHub account. Edits are committed to `master`, which redeploys the site.
+  Free plan: 3 sites, 10 collaborators.
+  1. Create a DecapBridge account and add a site: provider GitHub, repo
+     `PijusRan/ad-portfolio`.
+  2. Create a GitHub fine-grained token limited to that repo with *Contents:
+     read & write*, and paste it into the site form. It expires, so renew it
+     before then or saving will stop working.
+  3. Enter the admin URL (`https://<site>/admin/index.html`) and choose the PKCE
+     auth type (enables Google/Microsoft login).
+  4. Click *Create site*, then paste the `backend:` block DecapBridge generates
+     into `public/admin/config.yml`, replacing the current one. Push to `master`.
+  5. Invite editors under the site's *Manage collaborators* tab; they follow the
+     emailed link. Google/Microsoft login needs Decap above v3.8.3 (pinned in
+     `public/admin/index.html`).
 
 **Photos workflow.** There is one photo library, used by the *Media* tab, the
 *Cover image* picker and the *Photos* picker, so an upload from any of them is
