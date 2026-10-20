@@ -1,0 +1,8 @@
+# Netlify deploys from GitHub on every push to master.
+# NETLIFY=true makes astro.config.mjs build plain static output into dist/.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"

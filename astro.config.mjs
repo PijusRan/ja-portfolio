@@ -4,8 +4,10 @@ import react from '@astrojs/react';
 import vercel from '@astrojs/vercel';
 
 // GitHub Pages builds set GITHUB_PAGES=true (and BASE_PATH to "/<repo-name>") in
-// .github/workflows/deploy.yml. Everything else (local dev, Vercel) builds as before.
+// .github/workflows/deploy.yml. Netlify sets NETLIFY=true on its build machines.
+// Everything else (local dev, Vercel) builds as before.
 const onPages = process.env.GITHUB_PAGES === 'true';
+const onNetlify = process.env.NETLIFY === 'true';
 
 // https://astro.build/config
 export default defineConfig({
@@ -15,6 +17,12 @@ export default defineConfig({
         // Plain static output, no adapter
         site: process.env.SITE_URL,
         base: process.env.BASE_PATH,
+      }
+    : onNetlify
+    ? {
+        // Plain static output into dist/, served at the site root. Netlify resolves
+        // /admin and /admin/ to public/admin/index.html by itself.
+        site: process.env.URL,
       }
     : {
         adapter: vercel(),
