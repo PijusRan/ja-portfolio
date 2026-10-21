@@ -2,7 +2,7 @@ import { open } from 'node:fs/promises';
 import type { ImageMetadata } from 'astro';
 import exifr from 'exifr';
 
-const FIELDS = ['Make', 'Model', 'LensModel', 'FocalLength', 'FNumber', 'ExposureTime', 'ISO'];
+const FIELDS = ['FocalLength', 'FNumber', 'ExposureTime', 'ISO'];
 // EXIF sits in the JPEG's first segments; no need to read a 20 MB original in full
 const HEADER_BYTES = 128 * 1024;
 
@@ -10,7 +10,7 @@ const HEADER_BYTES = 128 * 1024;
 const cache = new Map<string, Promise<string | undefined>>();
 
 /**
- * One-line camera settings for a photo, e.g. "FUJIFILM X-T30 · XF18-55mmF2.8-4 R LM OIS · 55 mm · f/5 · 1/125 s · ISO 2000".
+ * One-line camera settings for a photo, e.g. "55 mm · f/5 · 1/125 s · ISO 2000".
  * Read from the source file, since the optimized webp output drops EXIF. Undefined when the file has none
  * (edited exports often don't), so a missing or unreadable header never breaks the build.
  */
@@ -42,16 +42,9 @@ async function readHeader(fsPath: string): Promise<Buffer> {
 
 function format(exif: Record<string, unknown> | undefined): string | undefined {
   if (!exif) return undefined;
-  const make = typeof exif.Make === 'string' ? exif.Make.trim() : '';
-  const model = typeof exif.Model === 'string' ? exif.Model.trim() : '';
-  // Some makers repeat the brand in the model ("Canon EOS R5"); don't print it twice
-  const camera = model.toLowerCase().startsWith(make.toLowerCase()) ? model : `${make} ${model}`.trim();
-  const lens = typeof exif.LensModel === 'string' ? exif.LensModel.replace(/^Fujifilm Fujinon\s+/i, '').trim() : '';
   const { FocalLength: focal, FNumber: aperture, ExposureTime: exposure, ISO: iso } = exif;
 
   const parts = [
-    camera,
-    lens,
     typeof focal === 'number' && `${round(focal)} mm`,
     typeof aperture === 'number' && `f/${round(aperture)}`,
     typeof exposure === 'number' && formatExposure(exposure),
