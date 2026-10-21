@@ -1,32 +1,55 @@
 ---
-// One shared preview dialog. Any element with data-preview='[{"src","alt"}]' opens it.
+// One shared preview dialog. Any element with data-preview='[{"src","srcset","alt","camera"?}]' opens it.
 ---
 
-<div class="lightbox" data-preview-dialog role="dialog" aria-modal="true" aria-label="Peržiūra" hidden>
+<dialog class="lightbox" data-preview-dialog aria-label="Peržiūra">
   <button type="button" class="lightbox__close" data-preview-close aria-label="Uždaryti">×</button>
   <button type="button" class="lightbox__nav lightbox__nav--prev" data-preview-prev aria-label="Ankstesnė nuotrauka">‹</button>
-  <img class="lightbox__image" data-preview-image alt="" />
+  <img class="lightbox__image" data-preview-image sizes="90vw" alt="" />
   <button type="button" class="lightbox__nav lightbox__nav--next" data-preview-next aria-label="Kita nuotrauka">›</button>
-</div>
+  <div class="lightbox__info">
+    <p class="lightbox__meta" data-preview-meta hidden></p>
+    <p class="lightbox__count" data-preview-count aria-live="polite" hidden></p>
+  </div>
+</dialog>
 
 <script>
-  type Photo = { src: string; alt: string };
+  type Photo = { src: string; srcset: string; alt: string; camera?: string };
 
-  const dialog = document.querySelector<HTMLElement>('[data-preview-dialog]')!;
+  const dialog = document.querySelector<HTMLDialogElement>('[data-preview-dialog]')!;
   const image = dialog.querySelector<HTMLImageElement>('[data-preview-image]')!;
+  const meta = dialog.querySelector<HTMLElement>('[data-preview-meta]')!;
+  const count = dialog.querySelector<HTMLElement>('[data-preview-count]')!;
   const closeButton = dialog.querySelector<HTMLElement>('[data-preview-close]')!;
   const prevButton = dialog.querySelector<HTMLElement>('[data-preview-prev]')!;
   const nextButton = dialog.querySelector<HTMLElement>('[data-preview-next]')!;
 
   let photos: Photo[] = [];
   let index = 0;
-  let trigger: HTMLElement | null = null;
 
   function show(i: number) {
     index = (i + photos.length) % photos.length;
     const photo = photos[index];
+    // Dim the previous photo until the new one has loaded
+    dialog.classList.add('is-loading');
+    image.srcset = photo.srcset;
     image.src = photo.src;
     image.alt = photo.alt;
+    meta.textContent = photo.camera ?? '';
+    meta.hidden = !photo.camera;
+    count.textContent = `${index + 1} / ${photos.length}`;
+    if (image.complete) dialog.classList.remove('is-loading');
+    preload(index + 1);
+    preload(index - 1);
+  }
+
+  function preload(i: number) {
+    if (photos.length < 2) return;
+    const photo = photos[(i + photos.length) % photos.length];
+    const img = new Image();
+    img.sizes = image.sizes;
+    img.srcset = photo.srcset;
+    img.src = photo.src;
   }
 
   function open(from: HTMLElement) {
@@ -36,22 +59,21 @@
       return;
     }
     if (!photos.length) return;
-    trigger = from;
     const multiple = photos.length > 1;
-    prevButton.hidden = nextButton.hidden = !multiple;
+    prevButton.hidden = nextButton.hidden = count.hidden = !multiple;
     show(0);
-    dialog.hidden = false;
-    document.body.style.overflow = 'hidden';
+    // showModal() traps focus, closes on Escape and returns focus to the trigger on close
+    dialog.showModal();
     closeButton.focus();
   }
 
-  function close() {
-    dialog.hidden = true;
+  image.addEventListener('load', () => dialog.classList.remove('is-loading'));
+  image.addEventListener('error', () => dialog.classList.remove('is-loading'));
+
+  dialog.addEventListener('close', () => {
+    image.removeAttribute('srcset');
     image.removeAttribute('src');
-    document.body.style.overflow = '';
-    trigger?.focus();
-    trigger = null;
-  }
+  });
 
   document.addEventListener('click', (e) => {
     const from = (e.target as Element).closest<HTMLElement>('[data-preview]');
@@ -63,16 +85,33 @@
 
   // Click on the backdrop (not the image or controls) closes the preview
   dialog.addEventListener('click', (e) => {
-    if (e.target === dialog) close();
+    if (e.target === dialog) dialog.close();
   });
-  closeButton.addEventListener('click', close);
+  closeButton.addEventListener('click', () => dialog.close());
   prevButton.addEventListener('click', () => show(index - 1));
   nextButton.addEventListener('click', () => show(index + 1));
 
-  document.addEventListener('keydown', (e) => {
-    if (dialog.hidden) return;
-    if (e.key === 'Escape') close();
+  dialog.addEventListener('keydown', (e) => {
     if (photos.length > 1 && e.key === 'ArrowRight') show(index + 1);
     if (photos.length > 1 && e.key === 'ArrowLeft') show(index - 1);
+  });
+
+  // Swipe left / right on touch screens
+  let startX: number | null = null;
+  let startY = 0;
+  dialog.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return;
+    startX = e.clientX;
+    startY = e.clientY;
+  });
+  dialog.addEventListener('pointerup', (e) => {
+    if (startX === null) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    startX = null;
+    if (photos.length > 1 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) show(dx < 0 ? index + 1 : index - 1);
+  });
+  dialog.addEventListener('pointercancel', () => {
+    startX = null;
   });
 </script>

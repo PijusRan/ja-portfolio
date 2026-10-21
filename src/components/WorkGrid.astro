@@ -2,8 +2,12 @@
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
 import { getPreviewPhotos } from '../lib/preview';
+import { withBase } from '../lib/url';
 
-const galleries = (await getCollection('galleries')).sort((a, b) => a.data.order - b.data.order).slice(0, 21);
+// Three rows of seven tiles in the desktop design; the rest are on /darbai
+const MAX_TILES = 21;
+
+const galleries = (await getCollection('galleries')).sort((a, b) => a.data.order - b.data.order).slice(0, MAX_TILES);
 const previews = await Promise.all(galleries.map(getPreviewPhotos));
 ---
 
@@ -24,6 +28,7 @@ const previews = await Promise.all(galleries.map(getPreviewPhotos));
     ))
   }
 </div>
+<a class="work-grid__all" href={withBase('/darbai/')}>Visi darbai →</a>
 
 <style>
   .work-grid {
@@ -43,13 +48,16 @@ const previews = await Promise.all(galleries.map(getPreviewPhotos));
     flex-shrink: 0;
     width: 158.857px;
     height: 158.857px;
-    min-width: 140px;
-    min-height: 140px;
   }
 
   .work-grid__tile :global(img) {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .work-grid__all {
+    align-self: center;
+    padding: 3px 5px;
   }
 </style>

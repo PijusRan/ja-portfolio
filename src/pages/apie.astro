@@ -10,9 +10,9 @@ const { image, focal, alt } = about.data;
 const { Content } = await render(about);
 ---
 
-<Layout title={`Apie mane — ${site.name}`} theme="dark">
+<Layout title={`Apie mane — ${site.name}`} description={`Apie fotografą ${site.name}.`} theme="dark" image={image}>
   <h1 class="page-title h1">{site.name}</h1>
-  <main>
+  <main id="turinys">
     <div class="about">
       <div class="about__image">
         <Image
@@ -28,7 +28,7 @@ const { Content } = await render(about);
     </div>
     <div class="cta">
       <h2 class="h2">
-        Papildomai informacijai susisiekite{' '}
+        Papildoma informacija:{' '}
         <a href={`mailto:${site.email}`}>{site.email}</a>
       </h2>
     </div>

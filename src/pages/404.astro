@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { site } from '../data/site';
+import { withBase } from '../lib/url';
+---
+
+<Layout title={`Puslapis nerastas — ${site.name}`} theme="dark" noindex>
+  <h1 class="page-title h1">404</h1>
+  <main id="turinys" class="not-found">
+    <h2 class="h2">
+      Tokio puslapio nėra. <a href={withBase('/')}>Grįžti į pradžią</a>
+    </h2>
+  </main>
+</Layout>
+
+<style>
+  .not-found {
+    display: flex;
+    justify-content: center;
+    padding: 0 40px 300px;
+    text-align: center;
+  }
+
+  .not-found .h2 {
+    line-height: 1.25;
+  }
+</style>

@@ -2,8 +2,7 @@ export const site = {
   name: 'Justas Andžius',
   brand: 'j.a',
   email: 'justasandzius@gmail.com',
-  // TODO: replace with the real Instagram handle
-  instagram: 'https://www.instagram.com/',
+  instagram: 'https://www.instagram.com/and_justas/',
   cities: { left: 'Pasvalys', right: 'Vilnius' },
   nav: [
     { label: 'Darbai', href: '/darbai/' },

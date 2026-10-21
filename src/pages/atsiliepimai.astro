@@ -6,7 +6,7 @@ import { withBase } from '../lib/url';
 
 <Layout title={`Atsiliepimai — ${site.name}`} theme="dark" noindex>
   <h1 class="page-title h1">Atsiliepimai</h1>
-  <main>
+  <main id="turinys">
     <form
       class="feedback"
       name="feedback"
@@ -42,8 +42,8 @@ import { withBase } from '../lib/url';
       </label>
 
       <label class="feedback__field">
-        <span>Ekrano nuotrauka (nebūtina)</span>
-        <input type="file" name="screenshot" accept="image/*" />
+        <span>Ekrano nuotrauka (nebūtina, iki 8 MB)</span>
+        <input type="file" name="screenshot" accept="image/*" data-max-bytes="8000000" />
       </label>
 
       <label class="feedback__field">
@@ -55,6 +55,18 @@ import { withBase } from '../lib/url';
     </form>
   </main>
 </Layout>
+
+<script>
+  // Netlify rejects uploads over 8 MB; say so before the form is sent instead of after
+  document.querySelectorAll<HTMLInputElement>('input[type="file"][data-max-bytes]').forEach((input) => {
+    input.addEventListener('change', () => {
+      const file = input.files?.[0];
+      const tooBig = !!file && file.size > Number(input.dataset.maxBytes);
+      input.setCustomValidity(tooBig ? 'Failas per didelis (daugiausia 8 MB).' : '');
+      input.reportValidity();
+    });
+  });
+</script>
 
 <style>
   .feedback {
@@ -140,8 +152,24 @@ import { withBase } from '../lib/url';
     cursor: pointer;
   }
 
-  .feedback__submit:hover {
+  .feedback__submit:hover,
+  .feedback__submit:focus-visible {
     opacity: 0.6;
+  }
+
+  .feedback input[type='radio'] {
+    margin: 0;
+    accent-color: var(--fg);
+  }
+
+  .feedback input[type='file']::file-selector-button {
+    margin-right: 16px;
+    padding: 8px 14px;
+    border: 1px solid var(--divider);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
   }
 
   @media (max-width: 1023px) {

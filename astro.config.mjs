@@ -1,6 +1,6 @@
 import { defineConfig } from 'astro/config';
 
-import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 
 // GitHub Pages builds set GITHUB_PAGES=true (and BASE_PATH to "/<repo-name>") in
@@ -11,7 +11,11 @@ const onNetlify = process.env.NETLIFY === 'true';
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react()],
+  integrations: [
+    sitemap({
+      filter: (page) => !page.includes('/atsiliepimai/') && !page.includes('/admin'),
+    }),
+  ],
   ...(onPages
     ? {
         // Plain static output, no adapter
