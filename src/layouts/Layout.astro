@@ -68,6 +68,8 @@ const ogImage =
       crossorigin
     />
     <title>{title}</title>
+    <!-- Scroll reveals only hide content once we know the script below will show it again -->
+    <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body data-theme={theme}>
     <a class="skip-link" href="#turinys">Pereiti prie turinio</a>
@@ -78,5 +80,24 @@ const ogImage =
       <slot />
       <Footer />
     </div>
+    <script>
+      // Fade [data-reveal] elements in as they scroll into view (styles in global.css, "Motion")
+      const targets = document.querySelectorAll('[data-reveal]');
+      if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        targets.forEach((el) => el.classList.add('is-revealed'));
+      } else {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              entry.target.classList.add('is-revealed');
+              observer.unobserve(entry.target);
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px' }
+        );
+        targets.forEach((el) => observer.observe(el));
+      }
+    </script>
   </body>
 </html>

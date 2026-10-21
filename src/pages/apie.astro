@@ -14,7 +14,7 @@ const { Content } = await render(about);
   <h1 class="page-title h1">{site.name}</h1>
   <main id="turinys">
     <div class="about">
-      <div class="about__image">
+      <div class="about__image" data-reveal>
         <Image
           src={image}
           width={1000}
@@ -24,9 +24,9 @@ const { Content } = await render(about);
           style={`object-position: ${focal}`}
         />
       </div>
-      <div class="about__bio"><Content /></div>
+      <div class="about__bio" data-reveal style="--reveal-delay: 150ms"><Content /></div>
     </div>
-    <div class="cta">
+    <div class="cta" data-reveal>
       <h2 class="h2">
         Papildoma informacija:{' '}
         <a href={`mailto:${site.email}`}>{site.email}</a>

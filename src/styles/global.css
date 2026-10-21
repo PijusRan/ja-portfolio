@@ -271,3 +271,56 @@ html:has(.lightbox[open]) {
     transition: none;
   }
 }
+
+/* Motion: slow, quiet entrances. Everything here is skipped for prefers-reduced-motion. */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-wipe: cubic-bezier(0.77, 0, 0.18, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.35em);
+    }
+  }
+
+  /* Landing: nav and page titles settle in */
+  .nav {
+    animation: fade-in 1s var(--ease-out) 0.1s both;
+  }
+
+  .page-title,
+  .hero h1 {
+    animation: rise-in 1.2s var(--ease-out) 0.5s both;
+  }
+
+  /* Scroll reveals; .js is set in Layout.astro so content never stays hidden without JS.
+     An animation (fill: backwards) rather than a transition, so hover fades stay quick afterwards. */
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+
+  .js [data-reveal]:not(.is-revealed) {
+    opacity: 0;
+  }
+
+  .js [data-reveal].is-revealed {
+    animation: reveal 1s var(--ease-out) var(--reveal-delay, 0ms) backwards;
+  }
+
+  /* Preview dialog fades up */
+  .lightbox[open] {
+    animation: fade-in 0.35s var(--ease-out);
+  }
+}

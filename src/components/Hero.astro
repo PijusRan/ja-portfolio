@@ -190,6 +190,53 @@ const leftSizes = '(max-width: 639px) 192px, (max-width: 1023px) 247px, 328px';
     opacity: 1;
   }
 
+  /* Landing: each slot wipes open (right from the top, left from the bottom) while its
+     photo settles from a slight zoom; the name then rises in (global.css, "Motion") */
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes wipe-down {
+      from {
+        clip-path: inset(0 0 100% 0);
+      }
+    }
+
+    @keyframes wipe-up {
+      from {
+        clip-path: inset(100% 0 0 0);
+      }
+    }
+
+    @keyframes settle {
+      from {
+        transform: scale(1.12);
+      }
+    }
+
+    .hero__right {
+      animation: wipe-down 1.4s var(--ease-wipe) 0.15s both;
+    }
+
+    .hero__left {
+      animation: wipe-up 1.4s var(--ease-wipe) 0.35s both;
+    }
+
+    .hero__right :global(.hero-frame) {
+      animation: settle 2.2s var(--ease-out) 0.15s both;
+    }
+
+    .hero__left :global(.hero-frame) {
+      animation: settle 2.2s var(--ease-out) 0.35s both;
+    }
+
+    /* The name waits until the photos are mostly open */
+    .hero h1 {
+      animation-delay: 0.9s;
+    }
+
+    .hero__toggle {
+      animation: fade-in 1s var(--ease-out) 1.6s both;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .hero__right :global(.hero-frame),
     .hero__left :global(.hero-frame) {

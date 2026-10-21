@@ -18,7 +18,7 @@ const sizes = isFull
   : '(min-width: 1024px) 595px, (min-width: 640px) 355px, 335px';
 ---
 
-<section class:list={['project', `project--${layout}`]} aria-label={`Projektas ${number}: ${title}`}>
+<section class:list={['project', `project--${layout}`]} data-reveal aria-label={`Projektas ${number}: ${title}`}>
   {
     isFull ? (
       <>

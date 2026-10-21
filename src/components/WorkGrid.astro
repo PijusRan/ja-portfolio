@@ -14,7 +14,14 @@ const previews = await Promise.all(galleries.map(getPreviewPhotos));
 <div class="work-grid">
   {
     galleries.map((gallery, i) => (
-      <button type="button" class="work-grid__tile" data-preview={JSON.stringify(previews[i])} aria-haspopup="dialog">
+      <button
+        type="button"
+        class="work-grid__tile"
+        data-preview={JSON.stringify(previews[i])}
+        aria-haspopup="dialog"
+        data-reveal
+        style={`--reveal-delay: ${(i % 7) * 60}ms`}
+      >
         <Image
           src={gallery.data.coverImage}
           width={320}
