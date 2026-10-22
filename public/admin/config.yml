@@ -35,7 +35,7 @@ auth:
 logo_url: https://decapbridge.com/decapcms-with-bridge.svg
 
 # Adds a "view site" link in the CMS
-site_url: https://justas-andzius.netlify.app
+site_url: https://andzius.lt
 
 local_backend: true
 

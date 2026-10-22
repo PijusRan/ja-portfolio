@@ -6,3 +6,7 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+# Canonical domain is andzius.lt. Netlify already redirects the www and
+# *.netlify.app hostnames to the primary domain once it is set in the dashboard,
+# so no redirect rules are needed here.
