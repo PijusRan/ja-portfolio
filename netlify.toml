@@ -10,3 +10,21 @@
 # Canonical domain is andzius.lt. Netlify already redirects the www and
 # *.netlify.app hostnames to the primary domain once it is set in the dashboard,
 # so no redirect rules are needed here.
+
+# Security headers. The site's own CSP is emitted by Astro (security.csp) as a <meta> tag;
+# frame-ancestors can only be set as a header.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    X-Frame-Options = "DENY"
+    Content-Security-Policy = "frame-ancestors 'none'"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"
+
+# Decap CMS is static HTML outside Astro, so it gets its own CSP. Tune if the CMS breaks.
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self' https://auth.decapbridge.com https://gateway.decapbridge.com https://api.github.com https://unpkg.com; img-src 'self' data: blob: https:; font-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"

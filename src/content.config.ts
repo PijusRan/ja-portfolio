@@ -2,6 +2,9 @@ import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
+// Only "x% y%" is allowed: the value ends up in a style attribute
+const focal = z.string().regex(/^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/, 'Use the form "50% 50%"').default('50% 50%');
+
 const galleries = defineCollection({
   loader: glob({
     pattern: '**/index.md',
@@ -20,7 +23,7 @@ const galleries = defineCollection({
       // Which side the cover image sits on in the /darbai row layout
       layout: z.enum(['image-right', 'image-left', 'full', 'narrow-left', 'narrow-right']).default('image-right'),
       // CSS object-position for the cover crop, e.g. "50% 87%"
-      focal: z.string().default('50% 50%'),
+      focal,
       // Extra photos, picked from the shared library (cover is added automatically).
       // `.nullable()` + the filter below tolerate a stray null the admin's photo-list
       // widget can occasionally leave behind (see the `hero.images` comment for why).
@@ -51,7 +54,7 @@ const hero = defineCollection({
             .object({
               image: image(),
               // CSS object-position for this image's crop, e.g. "50% 87%"
-              focal: z.string().default('50% 50%'),
+              focal,
               alt: z.string().default(''),
             })
             .nullable()
@@ -75,7 +78,7 @@ const about = defineCollection({
     z.object({
       image: image(),
       // CSS object-position for the portrait's crop, e.g. "50% 87%"
-      focal: z.string().default('50% 50%'),
+      focal,
       alt: z.string().default(''),
     }),
 });

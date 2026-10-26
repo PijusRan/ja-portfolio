@@ -198,14 +198,22 @@
 })();
 
 /*
- * Multi-file upload for the media library.
+ * Photo upload for the media library: every picked photo is shrunk and cleaned in the browser
+ * before Decap sees it, so the full-size original (with camera serial numbers, GPS, dates) is
+ * never committed to the public repo. Output: JPEG, at most 3000px on the long edge, with only
+ * the four camera settings the site's lightbox shows (focal length, aperture, shutter, ISO).
+ *
  * Decap's Upload button only accepts one file, and it persists only the first file of any
- * selection. We allow multi-select on the picker and, when several files arrive at once,
- * feed them to Decap one at a time as separate single-file "change" events.
+ * selection. We allow multi-select on the picker and feed the processed files to Decap one at
+ * a time as separate single-file "change" events. A photo that can't be processed (e.g. HEIC in
+ * most browsers) is refused rather than uploaded as-is.
+ * Keep MAX_EDGE / QUALITY in sync with scripts/clean-photos.mjs.
  */
 (function () {
   var replaying = false;
   var STEP_MS = 900;
+  var MAX_EDGE = 3000;
+  var QUALITY = 0.88;
 
   function allowMultiple(root) {
     (root.querySelectorAll ? root.querySelectorAll('input[type="file"]') : []).forEach(function (input) {
@@ -223,34 +231,119 @@
     });
   }).observe(document.documentElement, { childList: true, subtree: true });
 
+  function rational(x, tenths) {
+    if (tenths) return [Math.round(x * 10), 10];
+    return x >= 1 ? [Math.round(x * 10), 10] : [1, Math.max(1, Math.round(1 / x))];
+  }
+
+  // Only these four tags are written back; everything else in the original is dropped.
+  function cameraTags(file) {
+    var exifr = window.exifr;
+    if (!exifr) return Promise.resolve(null);
+    return exifr
+      .parse(file, ['FocalLength', 'FNumber', 'ExposureTime', 'ISO'])
+      .then(function (t) {
+        return t || null;
+      })
+      .catch(function () {
+        return null;
+      });
+  }
+
+  function compressPhoto(file) {
+    if (!/^image\//.test(file.type) || /svg|gif/.test(file.type)) return Promise.resolve(file);
+    return Promise.all([createImageBitmap(file, { imageOrientation: 'from-image' }), cameraTags(file)]).then(function (r) {
+      var bitmap = r[0];
+      var tags = r[1];
+      var scale = Math.min(1, MAX_EDGE / Math.max(bitmap.width, bitmap.height));
+      var canvas = document.createElement('canvas');
+      canvas.width = Math.round(bitmap.width * scale);
+      canvas.height = Math.round(bitmap.height * scale);
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      var dataUrl = canvas.toDataURL('image/jpeg', QUALITY); // canvas output carries no metadata
+      try {
+        var piexif = window.piexif;
+        if (piexif && tags) {
+          var exif = {};
+          if (tags.ExposureTime) exif[piexif.ExifIFD.ExposureTime] = rational(tags.ExposureTime);
+          if (tags.FNumber) exif[piexif.ExifIFD.FNumber] = rational(tags.FNumber, true);
+          if (tags.FocalLength) exif[piexif.ExifIFD.FocalLength] = rational(tags.FocalLength, true);
+          if (tags.ISO) exif[piexif.ExifIFD.ISOSpeedRatings] = Math.round(tags.ISO);
+          dataUrl = piexif.insert(piexif.dump({ Exif: exif }), dataUrl);
+        }
+      } catch (e) {
+        // Camera settings are optional; the clean JPEG is still fine without them
+      }
+      return fetch(dataUrl)
+        .then(function (res) {
+          return res.blob();
+        })
+        .then(function (blob) {
+          var base = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+          return new File([blob], base + '.jpg', { type: 'image/jpeg' });
+        });
+    });
+  }
+
+  var status = null;
+  function say(text) {
+    if (!text) {
+      if (status) status.remove();
+      status = null;
+      return;
+    }
+    if (!status) {
+      status = document.createElement('div');
+      status.className = 'ja-multibar';
+      document.body.appendChild(status);
+    }
+    status.textContent = text;
+  }
+
   document.addEventListener(
     'change',
     function (event) {
       var input = event.target;
-      if (replaying || !input || input.type !== 'file' || !input.files || input.files.length < 2) return;
+      if (replaying || !input || input.type !== 'file' || !input.files || !input.files.length) return;
 
-      // Stop Decap from seeing the multi-file event (it would keep only the first file)
+      // Stop Decap from seeing the raw selection; it gets the processed files instead
       event.stopImmediatePropagation();
       event.preventDefault();
 
       var files = Array.prototype.slice.call(input.files);
-      var index = 0;
+      var done = [];
+      var chain = Promise.resolve();
+      files.forEach(function (file, i) {
+        chain = chain
+          .then(function () {
+            say('Compressing photos… ' + (i + 1) + ' / ' + files.length);
+            return compressPhoto(file);
+          })
+          .then(
+            function (out) {
+              done.push(out);
+            },
+            function () {
+              window.alert('Could not process "' + file.name + '". Export it as JPEG and try again. It was not uploaded.');
+            }
+          );
+      });
 
-      function next() {
-        if (index >= files.length) {
+      chain.then(function () {
+        say('');
+        var index = 0;
+        function next() {
+          if (index >= done.length) return;
+          var transfer = new DataTransfer();
+          transfer.items.add(done[index++]);
+          input.files = transfer.files;
+          replaying = true;
+          input.dispatchEvent(new Event('change', { bubbles: true }));
           replaying = false;
-          return;
+          setTimeout(next, STEP_MS);
         }
-        var transfer = new DataTransfer();
-        transfer.items.add(files[index++]);
-        input.files = transfer.files;
-        replaying = true;
-        input.dispatchEvent(new Event('change', { bubbles: true }));
-        replaying = false;
-        setTimeout(next, STEP_MS);
-      }
-
-      next();
+        next();
+      });
     },
     true
   );

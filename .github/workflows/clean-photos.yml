@@ -1,0 +1,30 @@
+name: Clean photos
+
+# Safety net: the CMS shrinks and cleans photos before upload; this catches anything pushed
+# another way (git, GitHub web UI, a browser where the admin script failed).
+on:
+  push:
+    branches: [master]
+    paths: ['src/assets/uploads/**']
+
+permissions:
+  contents: write
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: sudo apt-get update && sudo apt-get install -y libimage-exiftool-perl
+      - run: npm ci
+      - run: npm run clean-photos
+      - name: Commit cleaned photos
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A src/assets/uploads
+          git diff --cached --quiet || { git commit -m "Compress and clean uploaded photos"; git push; }

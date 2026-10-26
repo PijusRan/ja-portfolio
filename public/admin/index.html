@@ -9,7 +9,23 @@
     <link rel="stylesheet" href="admin.css" />
   </head>
   <body>
-    <script src="https://unpkg.com/decap-cms@3.17.1/dist/decap-cms.js"></script>
+    <!-- Regenerate the hash when the version changes: curl -s <url> | openssl dgst -sha384 -binary | openssl base64 -A -->
+    <script
+      src="https://unpkg.com/decap-cms@3.17.1/dist/decap-cms.js"
+      integrity="sha384-d2pbrhjc5asvSK35gKkrgRIk0Wq+2CQynWnXtSsYWQawXCgBXhcAK737jBAKXT4T"
+      crossorigin="anonymous"
+    ></script>
+    <!-- Used by admin.js to keep camera settings when shrinking photos -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js"
+      integrity="sha384-KRanV2NRwHPanp7iM6nlLQC5jPCTscSYMko30dLJHzNXJaUNtcucWv+SOi3jV3PE"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/piexifjs@1.0.6/piexif.js"
+      integrity="sha384-yk/k1j9hKtYh4LJRX0d6o3pO9c8h4lp2IMnWdamQhThRA2Z9B0YNDeGKyDmPXnnJ"
+      crossorigin="anonymous"
+    ></script>
     <script src="admin.js"></script>
   </body>
 </html>

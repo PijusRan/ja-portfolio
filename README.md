@@ -2,7 +2,7 @@
 
 Portfolio site for photographer Justas Andžius. **Astro** builds a static site
 (home, work and about pages), **Decap CMS** at `/admin` edits the content, and
-it deploys to **GitHub Pages** or **Vercel**. Photos are committed into the repo
+it deploys to **Netlify** (andzius.lt). Photos are committed into the repo
 next to their gallery entry and optimized (responsive sizes, WebP) at build time
 by Astro's image pipeline, so no external image service is needed.
 
@@ -30,7 +30,7 @@ Each page picks a colour theme: cream (home), white (work), black (about).
 
 ```text
 /
-├── .github/workflows/deploy.yml   # GitHub Pages deployment
+├── .github/workflows/clean-photos.yml  # recompresses/cleans photos pushed outside the CMS
 ├── public/
 │   └── admin/                     # Decap CMS: index.html, config.yml, admin.css, admin.js (live preview)
 ├── src/
@@ -143,25 +143,21 @@ The dashboard's look is in `public/admin/admin.css`, and the custom widget and
 upload helper are in `public/admin/admin.js`. Both depend on Decap's internal class
 names, so a Decap upgrade may need small fixes.
 
-### 2. GitHub Pages (hosting)
+### 2. Netlify (hosting)
 
-`.github/workflows/deploy.yml` builds and deploys on every push to `master`
-(or manually from the Actions tab).
+Netlify builds on every push to `master` (CMS commits included); settings are in
+`netlify.toml`, which also sets the security headers. In the Netlify dashboard,
+for the feedback form: keep spam filtering on, send notifications only to the owner,
+open attachments from the Netlify UI, and delete old submissions now and then.
 
-1. In the repo: Settings → Pages → Source: **GitHub Actions**.
-2. Push. The site is served at `https://<owner>.github.io/<repo-name>/`.
+### 3. Photos
 
-The workflow sets `GITHUB_PAGES=true`, `SITE_URL` and `BASE_PATH` (the repo name)
-for the build. In that mode `astro.config.mjs` uses plain static output with no
-adapter and a base path. All internal links go through `withBase()`
-(`src/lib/url.ts`), and fonts live in `src/assets/` so their URLs get the base
-path too. If you add links to new pages, wrap them in `withBase()`.
-
-### 3. Vercel (alternative hosting)
-
-Import the GitHub repo at vercel.com. The `@astrojs/vercel` adapter is
-configured for normal builds (when `GITHUB_PAGES` is not set), so no build
-settings are needed. Every push (including CMS commits) triggers a rebuild.
+Photos uploaded in `/admin` are shrunk in the browser (3000px, JPEG) and stripped of
+metadata (serial numbers, GPS, dates) before they reach the repo; only focal length,
+aperture, shutter and ISO are kept for the photo viewer. `npm run clean-photos` does
+the same for files already in `src/assets/uploads` (needs `exiftool`), and a GitHub
+Action runs it for anything pushed another way. The build fails if an original photo
+would be published.
 
 ## Fonts
 

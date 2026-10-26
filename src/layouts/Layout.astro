@@ -38,7 +38,6 @@ const ogImage =
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href={withBase('/favicon.ico')} sizes="any" />
-    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex" />}
@@ -59,7 +58,6 @@ const ogImage =
       )
     }
     <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
-    <meta name="generator" content={Astro.generator} />
     <link
       rel="preload"
       href={displayFont}
