@@ -33,17 +33,22 @@ import { withBase } from '../lib/url';
 
       <label class="feedback__field">
         <span>Puslapis</span>
-        <input type="text" name="page" placeholder="pvz. Darbai, Apie mane" />
+        <select name="page">
+          <option value="Pagrindinis">Pagrindinis</option>
+          <option value="Darbai">Darbai</option>
+          <option value="Apie mane">Apie mane</option>
+          <option value="Kita">Kita</option>
+        </select>
       </label>
 
       <label class="feedback__field">
         <span>Aprašymas</span>
-        <textarea name="description" rows="8" required></textarea>
+        <textarea name="description" rows="8" maxlength="5000" data-max-lines="40" required></textarea>
       </label>
 
       <label class="feedback__field">
         <span>Ekrano nuotrauka (nebūtina, iki 8 MB)</span>
-        <input type="file" name="screenshot" accept="image/*" data-max-bytes="8000000" />
+        <input type="file" name="screenshot" accept="image/jpeg,image/png,image/gif,image/webp,image/avif,image/heic,image/heif" data-image-only data-max-bytes="8000000" />
       </label>
 
       <label class="feedback__field">
@@ -57,13 +62,29 @@ import { withBase } from '../lib/url';
 </Layout>
 
 <script>
-  // Netlify rejects uploads over 8 MB; say so before the form is sent instead of after
+  // Netlify rejects uploads over 8 MB; say so before the form is sent instead of after.
+  // `accept` is only a hint in the file picker, so the type is checked here too.
+  const imageTypes = /^image\/(jpeg|png|gif|webp|avif|heic|heif)$/;
   document.querySelectorAll<HTMLInputElement>('input[type="file"][data-max-bytes]').forEach((input) => {
     input.addEventListener('change', () => {
       const file = input.files?.[0];
-      const tooBig = !!file && file.size > Number(input.dataset.maxBytes);
-      input.setCustomValidity(tooBig ? 'Failas per didelis (daugiausia 8 MB).' : '');
-      input.reportValidity();
+      let message = '';
+      if (file && input.hasAttribute('data-image-only') && !imageTypes.test(file.type)) {
+        message = 'Leidžiami tik paveikslėliai (JPG, PNG, GIF, WebP).';
+      } else if (file && file.size > Number(input.dataset.maxBytes)) {
+        message = 'Failas per didelis (daugiausia 8 MB).';
+      }
+      input.setCustomValidity(message);
+      if (message) input.reportValidity();
+    });
+  });
+
+  // Silent spam guard: extra lines beyond the limit are dropped without telling the user
+  document.querySelectorAll<HTMLTextAreaElement>('textarea[data-max-lines]').forEach((area) => {
+    const max = Number(area.dataset.maxLines);
+    area.addEventListener('input', () => {
+      const lines = area.value.split(/\r\n|\r|\n/);
+      if (lines.length > max) area.value = lines.slice(0, max).join('\n');
     });
   });
 </script>
@@ -127,11 +148,30 @@ import { withBase } from '../lib/url';
     text-transform: none;
   }
 
+  .feedback select {
+    width: 100%;
+    padding: 12px 0;
+    border: 0;
+    border-bottom: 1px solid var(--divider);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-transform: none;
+    cursor: pointer;
+  }
+
+  .feedback select option {
+    background: var(--bg);
+    color: var(--fg);
+  }
+
   .feedback textarea {
     resize: vertical;
   }
 
   .feedback input:focus-visible,
+  .feedback select:focus-visible,
   .feedback textarea:focus-visible {
     outline: 1px solid var(--fg);
     outline-offset: 4px;
@@ -144,8 +184,8 @@ import { withBase } from '../lib/url';
 
   .feedback__submit {
     align-self: flex-start;
-    padding: 20px 0 0;
-    border: 0;
+    padding: 16px 32px;
+    border: 1px solid currentColor;
     background: none;
     color: inherit;
     line-height: 1.25;
@@ -154,7 +194,8 @@ import { withBase } from '../lib/url';
 
   .feedback__submit:hover,
   .feedback__submit:focus-visible {
-    opacity: 0.6;
+    background: var(--fg);
+    color: var(--bg);
   }
 
   .feedback input[type='radio'] {

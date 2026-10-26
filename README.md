@@ -176,3 +176,10 @@ NATS's sizing so the layout didn't change.
 
 Use `/admin` (*New Gallery*), or add a folder under `src/content/galleries/`
 following the frontmatter above, with the image files next to `index.md`.
+
+## Branch naming
+
+Branches are named after the date they were started: `yyyymmdd`, for example
+`20261026`. If another branch is started on the same day, add a letter to tell
+them apart: `20261026a`, then `20261026b`, and so on. The first branch of the day
+has no letter. `master` is the production branch, and every push to it deploys.

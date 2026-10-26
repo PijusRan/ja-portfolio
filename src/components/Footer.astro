@@ -49,11 +49,14 @@ import { withBase } from '../lib/url';
     gap: 120px;
   }
 
+  /* Three equal columns so the middle link is truly centered whatever the label widths */
   .footer__socials {
-    display: flex;
-    justify-content: center;
-    gap: 275px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     align-items: center;
+    justify-items: center;
+    width: 100%;
+    max-width: 800px;
   }
 
   /* Big wordmark: 605px in the 1280 design, so it scales with the viewport */
@@ -95,7 +98,7 @@ import { withBase } from '../lib/url';
     }
 
     .footer__socials {
-      gap: 120px;
+      max-width: 520px;
     }
   }
 
@@ -106,9 +109,15 @@ import { withBase } from '../lib/url';
     }
 
     .footer__socials {
-      justify-content: space-between;
-      gap: 0;
-      width: 100%;
+      max-width: none;
+    }
+
+    .footer__socials > :first-child {
+      justify-self: start;
+    }
+
+    .footer__socials > :last-child {
+      justify-self: end;
     }
 
     .footer__initials {
