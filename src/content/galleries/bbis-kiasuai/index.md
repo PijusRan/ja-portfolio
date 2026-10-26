@@ -5,6 +5,7 @@ photos:
   - ~/assets/uploads/img_7383.jpeg
   - ~/assets/uploads/photo-1.jpg
   - ~/assets/uploads/dscf3643.jpg
+  - ~/assets/uploads/f0b.jpeg
 order: 0
 layout: image-right
 focal: 50% 50%
