@@ -7,7 +7,7 @@ images:
   - image: ~/assets/uploads/dscf0150-raf_edited.jpg
     focal: 50% 50%
     alt: ""
-  - image: ~/assets/uploads/chair.jpg
+  - image: ~/assets/uploads/f0b.jpeg
     focal: 50% 50%
     alt: ""
 rotate: true
