@@ -10,20 +10,24 @@ const { image, focal, alt } = about.data;
 const { Content } = await render(about);
 ---
 
-<Layout title={`Apie mane — ${site.name}`} description={`Apie fotografą ${site.name}.`} theme="dark" image={image}>
+<Layout title={`Apie mane — ${site.name}`} description={`Apie fotografą ${site.name}.`} theme="dark" image={image ?? undefined}>
   <h1 class="page-title h1">{site.name}</h1>
   <main id="turinys">
     <div class="about">
-      <div class="about__image" data-reveal>
-        <Image
-          src={image}
-          width={1000}
-          sizes="(min-width: 1024px) 461px, (min-width: 640px) 560px, 335px"
-          alt={alt}
-          loading="eager"
-          style={`object-position: ${focal}`}
-        />
-      </div>
+      {
+        image && (
+          <div class="about__image" data-reveal>
+            <Image
+              src={image}
+              width={1000}
+              sizes="(min-width: 1024px) 461px, (min-width: 640px) 560px, 335px"
+              alt={alt}
+              loading="eager"
+              style={`object-position: ${focal}`}
+            />
+          </div>
+        )
+      }
       <div class="about__bio" data-reveal style="--reveal-delay: 150ms"><Content /></div>
     </div>
     <div class="cta" data-reveal>

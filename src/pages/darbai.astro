@@ -1,11 +1,11 @@
 ---
-import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import ProjectRow from '../components/ProjectRow.astro';
 import Preview from '../components/Preview.astro';
 import { site } from '../data/site';
+import { getGalleries } from '../lib/photos';
 
-const galleries = (await getCollection('galleries')).sort((a, b) => a.data.order - b.data.order);
+const galleries = await getGalleries();
 ---
 
 <Layout title={`Darbai — ${site.name}`} description={`${site.name} – fotografijos darbai.`} theme="light">

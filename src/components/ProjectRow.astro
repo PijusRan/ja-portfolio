@@ -1,10 +1,10 @@
 ---
 import { Image } from 'astro:assets';
-import type { CollectionEntry } from 'astro:content';
 import { getPreviewPhotos } from '../lib/preview';
+import type { Gallery } from '../lib/photos';
 
 interface Props {
-  gallery: CollectionEntry<'galleries'>;
+  gallery: Gallery;
   index: number;
 }
 
