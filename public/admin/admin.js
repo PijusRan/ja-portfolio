@@ -240,13 +240,14 @@
  *
  * Decap's Upload button only accepts one file, and it persists only the first file of any
  * selection. We allow multi-select on the picker and feed the processed files to Decap one at
- * a time as separate single-file "change" events. A photo that can't be processed (e.g. HEIC in
- * most browsers) is refused rather than uploaded as-is.
+ * a time as separate single-file "change" events, each only once the previous upload has
+ * finished: in the Media tab every upload is its own commit, and overlapping ones fail or time
+ * out. If one fails, the rest are not sent. A photo that can't be processed (e.g. HEIC in most
+ * browsers) is refused rather than uploaded as-is.
  * Keep MAX_EDGE / QUALITY in sync with scripts/clean-photos.mjs.
  */
 (function () {
   var replaying = false;
-  var STEP_MS = 900;
   var MAX_EDGE = 3000;
   var QUALITY = 0.88;
 
@@ -320,6 +321,32 @@
     });
   }
 
+  // Resolves once Decap is done with the file just handed to it (in the Media tab it's committed
+  // right away; from an entry it's only added to the draft, which is instant): true if the file
+  // is now in the library, null if the library was closed meanwhile. Decap shows its own error
+  // notification when an upload fails.
+  function uploaded(file) {
+    var name = file.type === 'image/jpeg' ? file.name : null; // processed photos keep their name exactly
+    var start = Date.now();
+    return new Promise(function (resolve) {
+      (function poll() {
+        var lib = window.__ja.mediaLibrary();
+        if (!lib) return resolve(null);
+        var busy = lib.props.isPersisting || lib.props.isDeleting;
+        var elapsed = Date.now() - start;
+        if (busy || elapsed < 500) return setTimeout(poll, 250);
+        var files = lib.props.files;
+        if (typeof files.toJS === 'function') files = files.toJS();
+        var found = !name || files.some(function (f) {
+          return String(f.name).toLowerCase() === name;
+        });
+        // Not there yet: give a slow re-render a moment before calling it failed
+        if (!found && elapsed < 2000) return setTimeout(poll, 250);
+        resolve(found);
+      })();
+    });
+  }
+
   var status = null;
   function say(text) {
     if (!text) {
@@ -365,17 +392,31 @@
       });
 
       chain.then(function () {
-        say('');
         var index = 0;
         function next() {
-          if (index >= done.length) return;
+          if (index >= done.length) return say('');
+          var file = done[index++];
+          say('Uploading photos… ' + index + ' / ' + done.length);
+          // Decap may have re-rendered the upload button since the photos were picked
+          var target = input.isConnected ? input : document.querySelector('[class*="StyledModal"] input[type="file"]');
+          if (!target) return say('');
           var transfer = new DataTransfer();
-          transfer.items.add(done[index++]);
-          input.files = transfer.files;
+          transfer.items.add(file);
+          target.files = transfer.files;
           replaying = true;
-          input.dispatchEvent(new Event('change', { bubbles: true }));
+          target.dispatchEvent(new Event('change', { bubbles: true }));
           replaying = false;
-          setTimeout(next, STEP_MS);
+          uploaded(file).then(function (ok) {
+            if (ok) return next();
+            say('');
+            if (ok === null) return;
+            var left = done.length - index;
+            window.alert(
+              '"' + file.name + '" was not uploaded' +
+                (left ? ', so the ' + left + ' photo(s) after it were not sent either' : '') +
+                '. Check your connection and upload ' + (left ? 'them' : 'it') + ' again.'
+            );
+          });
         }
         next();
       });
