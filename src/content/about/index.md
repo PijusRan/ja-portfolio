@@ -1,5 +1,5 @@
 ---
-image: ~/assets/uploads/about-portrait.jpg
+image: ~/assets/uploads/dsc_0177_original.jpeg
 focal: 50% 50%
 alt: Justas Andžius
 ---
