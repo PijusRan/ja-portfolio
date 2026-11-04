@@ -38,6 +38,41 @@
   window.__ja.stopPolling = function (component) {
     clearTimeout(component.__jaRetry);
   };
+
+  /*
+   * Decap's MediaLibrary component (a class instance) behind the open library modal, found by
+   * walking up React's internal tree from the modal's DOM node. Its props and state are always
+   * current: `files` is the whole library, not just the cards the virtualised grid happens to
+   * have rendered, `state.query` is the search box, and `isPersisting` is true while an upload
+   * is being committed. Null when the modal is closed, or if a Decap update changed its shape.
+   */
+  window.__ja.mediaLibrary = function () {
+    var m = document.querySelector('[class*="StyledModal"], [class*="MediaLibraryModal"]');
+    if (!m) return null;
+    var key = Object.keys(m).find(function (k) {
+      return k.indexOf('__reactFiber$') === 0;
+    });
+    for (var fiber = key ? m[key] : null; fiber; fiber = fiber.return) {
+      var lib = fiber.stateNode;
+      if (lib && lib.props && lib.props.files && typeof lib.filterImages === 'function' && typeof lib.queryFilter === 'function') {
+        return lib;
+      }
+    }
+    return null;
+  };
+
+  // Every file the library is currently listing (same filters as Decap's own grid), or null
+  window.__ja.libraryFiles = function () {
+    var lib = window.__ja.mediaLibrary();
+    if (!lib) return null;
+    var files = lib.props.files;
+    if (typeof files.toJS === 'function') files = files.toJS();
+    if (!Array.isArray(files)) return null;
+    if (lib.props.forImage) files = lib.filterImages(files);
+    var query = lib.state && lib.state.query;
+    if (query && !lib.props.dynamicSearch) files = lib.queryFilter(query, files);
+    return files;
+  };
 })();
 
 /* Live preview for galleries: shows the project the way it appears on the work page. */
@@ -742,9 +777,17 @@
     bar.querySelector('[data-ja-all]').addEventListener('click', function () {
       var m = modal();
       if (!m) return;
-      var names = Array.prototype.map.call(m.querySelectorAll('p[class*="CardText"]'), function (p) {
-        return p.textContent.trim();
-      });
+      // The grid only renders the cards near the scroll position, so the names come from
+      // Decap's file list (respecting the search box). The rendered cards are a fallback.
+      var files = window.__ja.libraryFiles();
+      var names = files
+        ? files.map(function (file) {
+            return file.name;
+          })
+        : Array.prototype.map.call(m.querySelectorAll('p[class*="CardText"]'), function (p) {
+            return p.textContent.trim();
+          });
+      names = names.filter(Boolean);
       var allSelected = names.length > 0 && names.every(function (n) { return selected[n]; });
       selected = Object.create(null);
       selectedCount = 0;
