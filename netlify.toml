@@ -1,8 +1,11 @@
-# Netlify deploys from GitHub on every push to master.
+# Netlify only builds when its build hook is called; .github/workflows/deploy.yml calls it
+# once pushes to master have stopped for a while, so a burst of CMS commits is one deploy.
 # NETLIFY=true makes astro.config.mjs build plain static output into dist/.
 [build]
   command = "npm run build"
   publish = "dist"
+  # Exit 0 = skip. INCOMING_HOOK_TITLE is only set for builds started by a build hook.
+  ignore = '[ -z "$INCOMING_HOOK_TITLE" ]'
 
 [build.environment]
   NODE_VERSION = "22"

@@ -1,0 +1,31 @@
+name: Deploy
+
+# Debounced Netlify deploy. The CMS makes one commit per action, so deploying on every
+# push burns Netlify credits. Each push restarts a wait; Netlify is only asked to build
+# once master has been quiet for WAIT_SECONDS. netlify.toml skips builds not started by
+# the build hook. Run this workflow by hand ("Run workflow") to deploy right away.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: netlify-deploy
+  cancel-in-progress: true
+
+env:
+  WAIT_SECONDS: 600
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for pushes to stop
+        if: github.event_name == 'push'
+        run: sleep "$WAIT_SECONDS"
+      - name: Trigger Netlify build hook
+        env:
+          HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "NETLIFY_BUILD_HOOK secret is not set"; exit 1; fi
+          curl -fsS -X POST -d '{}' "$HOOK"

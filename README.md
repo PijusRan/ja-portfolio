@@ -145,8 +145,12 @@ names, so a Decap upgrade may need small fixes.
 
 ### 2. Netlify (hosting)
 
-Netlify builds on every push to `master` (CMS commits included); settings are in
-`netlify.toml`, which also sets the security headers. In the Netlify dashboard,
+Netlify deploys `master` once pushes have stopped for 10 minutes, so a burst of CMS
+commits costs one deploy. The `Deploy` GitHub Action waits, then calls a Netlify build
+hook (repo secret `NETLIFY_BUILD_HOOK`); `netlify.toml` skips builds not started by the
+hook. To deploy right away, open Actions → Deploy → Run workflow. To change the wait,
+edit `WAIT_SECONDS` in `.github/workflows/deploy.yml`. `netlify.toml` also sets the
+security headers. In the Netlify dashboard,
 for the feedback form: keep spam filtering on, send notifications only to the owner,
 open attachments from the Netlify UI, and delete old submissions now and then.
 
