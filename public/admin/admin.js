@@ -40,6 +40,26 @@
   };
 
   /*
+   * Decap's widget wrapper stops passing new values down to a widget while it thinks a photo is
+   * still loading (its `isLoadingAsset` prop), so after `onChange` a widget's `props.value` can
+   * stay stale indefinitely. Every move/remove would then start from that stale list, undoing the
+   * previous edit (and bringing removed photos back). `latest` returns the last value this widget
+   * sent until Decap passes down a different value; `send` reports a change and redraws with it.
+   */
+  window.__ja.latest = function (component) {
+    if (component.__jaSent && component.props.value === component.__jaSentOver) return component.__jaSent;
+    component.__jaSent = null;
+    return component.props.value;
+  };
+
+  window.__ja.send = function (component, value) {
+    if (!component.__jaSent) component.__jaSentOver = component.props.value;
+    component.__jaSent = value;
+    component.props.onChange(value);
+    component.forceUpdate();
+  };
+
+  /*
    * Decap's MediaLibrary component (a class instance) behind the open library modal, found by
    * walking up React's internal tree from the modal's DOM node. Its props and state are always
    * current: `files` is the whole library, not just the cards the virtualised grid happens to
@@ -446,6 +466,7 @@
   if (!CMS || !h || !createClass) return;
 
   var PUBLIC_PREFIX = '~/assets/uploads/'; // keep in sync with public_folder in config.yml
+  var CROP = /^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/; // keep in sync with FOCAL in src/content.config.ts
 
   function toPaths(value) {
     if (!value) return [];
@@ -473,12 +494,12 @@
     paths: function () {
       // Defensively drop anything that isn't a real path: guards against a stray null a
       // stale reorder/remove click could otherwise leave behind (see `move` below).
-      return toPaths(this.props.value).filter(function (p) {
+      return toPaths(window.__ja.latest(this)).filter(function (p) {
         return typeof p === 'string' && p;
       });
     },
     set: function (list) {
-      this.props.onChange(list);
+      window.__ja.send(this, list);
     },
     add: function (added) {
       var current = this.paths();
@@ -593,7 +614,7 @@
       if (this.props.onRemoveMediaControl) this.props.onRemoveMediaControl(this.controlID());
     },
     items: function () {
-      var value = this.props.value;
+      var value = window.__ja.latest(this);
       if (!value) return [];
       var arr = typeof value.toJS === 'function' ? value.toJS() : value;
       if (!Array.isArray(arr)) return [];
@@ -604,7 +625,7 @@
       });
     },
     set: function (list) {
-      this.props.onChange(list);
+      window.__ja.send(this, list);
     },
     add: function (paths) {
       var current = this.items();
@@ -638,6 +659,17 @@
       var item = list.splice(index, 1)[0];
       list.splice(target, 0, item);
       this.set(list);
+    },
+    // Decap calls this before saving. A crop that isn't "x% y%" would be dropped by the build
+    // anyway (it falls back to the centre), so refuse it here where the editor can fix it.
+    isValid: function () {
+      var bad = this.items().filter(function (item) {
+        return !CROP.test(item.focal || '');
+      });
+      if (!bad.length) return true;
+      return { error: { message: 'Crop must look like "50% 50%" (check ' + bad.map(function (item) {
+        return item.image.split('/').pop();
+      }).join(', ') + ').' } };
     },
     update: function (index, key, value) {
       var list = this.items();

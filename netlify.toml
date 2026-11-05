@@ -27,7 +27,8 @@
     Strict-Transport-Security = "max-age=31536000; includeSubDomains"
 
 # Decap CMS is static HTML outside Astro, so it gets its own CSP. Tune if the CMS breaks.
+# connect-src needs blob: because Decap reads every file it uploads with fetch(blob:...).
 [[headers]]
   for = "/admin/*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self' https://auth.decapbridge.com https://gateway.decapbridge.com https://api.github.com https://unpkg.com; img-src 'self' data: blob: https:; font-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://unpkg.com https://cdn.jsdelivr.net 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://unpkg.com; connect-src 'self' https://auth.decapbridge.com https://gateway.decapbridge.com https://api.github.com https://unpkg.com blob:; img-src 'self' data: blob: https:; font-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"

@@ -132,6 +132,6 @@ collections:
           - { label: Narrow image on the left, value: narrow-left }
           - { label: Narrow image on the right, value: narrow-right }
         hint: How this project is laid out on the work page.
-      - { label: Cover crop, name: focal, widget: string, default: '50% 50%', pattern: ['^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$', 'Use the form "50% 50%"'], required: false, hint: 'Which part of the cover stays visible when cropped, as "x% y%". 50% 50% is the centre; use a higher second number to show more of the bottom.' }
+      - { label: Cover crop, name: focal, widget: string, default: '50% 50%', pattern: ['^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$', 'Use the form "50% 50%"'], hint: 'Which part of the cover stays visible when cropped, as "x% y%". 50% 50% is the centre; use a higher second number to show more of the bottom.' }
       - { label: Description, name: description, widget: text, required: false }
       - { label: Story, name: body, widget: markdown, required: false }

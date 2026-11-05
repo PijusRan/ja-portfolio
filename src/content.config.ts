@@ -1,12 +1,19 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineCollection, type ImageFunction } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob, type Loader } from 'astro/loaders';
 
-// Only "x% y%" is allowed: the value ends up in a style attribute
-const focal = z.string().regex(/^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/, 'Use the form "50% 50%"').default('50% 50%');
+// Only "x% y%" is allowed: the value ends up in a style attribute. Anything else (an emptied or
+// mistyped crop field in the admin) falls back to the centre with a warning instead of failing
+// the build, which would stop the site from deploying.
+const FOCAL = /^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$/;
+const focal = z.preprocess((value) => {
+  if (value === undefined || (typeof value === 'string' && FOCAL.test(value))) return value;
+  console.warn(`[content] Crop ${JSON.stringify(value)} isn't in the form "50% 50%"; using the centre.`);
+  return '50% 50%';
+}, z.string().regex(FOCAL).default('50% 50%'));
 
 // The CMS lets editors delete a photo from the library that a page still uses. Astro would then
 // fail the whole build (and the site would stop deploying), so a path to a deleted photo becomes
@@ -23,16 +30,31 @@ const photo = (image: ImageFunction) =>
     return null;
   }, image().nullable());
 
-// The glob loader only re-parses a file when its text changes, so an unchanged page whose photo
-// was deleted would come straight from the build cache, skip the check above, and still fail.
-// Dropping those cached entries first makes the loader parse them again.
+// The glob loader only re-parses a file when its text changes, so an unchanged page would come
+// straight from the build cache and skip the check above. That goes wrong both ways: a photo
+// deleted since the last build would still be used (and fail the build), and a photo that was
+// missing then but has been uploaded again since would stay left out. Dropping those cached
+// entries first makes the loader parse them again.
+const photoPaths = (filePath: string | undefined, root: URL): string[] => {
+  if (!filePath) return [];
+  try {
+    return readFileSync(new URL(filePath, root), 'utf8').match(/~\/[^\s'"\],}]+/g) ?? [];
+  } catch {
+    return [];
+  }
+};
+
 const content = (options: Parameters<typeof glob>[0]): Loader => {
   const loader = glob(options);
   return {
     ...loader,
     load: (context) => {
       for (const [id, entry] of context.store.entries()) {
-        if (entry.assetImports?.some(isDeleted)) context.store.delete(id);
+        const used = entry.assetImports ?? [];
+        const restored = photoPaths(entry.filePath, context.config.root).some(
+          (path) => !used.includes(path) && !isDeleted(path)
+        );
+        if (restored || used.some(isDeleted)) context.store.delete(id);
       }
       return loader.load(context);
     },
