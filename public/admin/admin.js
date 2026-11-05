@@ -310,14 +310,12 @@
       } catch (e) {
         // Camera settings are optional; the clean JPEG is still fine without them
       }
-      return fetch(dataUrl)
-        .then(function (res) {
-          return res.blob();
-        })
-        .then(function (blob) {
-          var base = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
-          return new File([blob], base + '.jpg', { type: 'image/jpeg' });
-        });
+      // Decoded by hand: fetch(dataUrl) is blocked by the admin CSP (connect-src has no data:)
+      var binary = atob(dataUrl.slice(dataUrl.indexOf(',') + 1));
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      var base = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+      return new File([bytes], base + '.jpg', { type: 'image/jpeg' });
     });
   }
 
@@ -385,7 +383,8 @@
             function (out) {
               done.push(out);
             },
-            function () {
+            function (err) {
+              console.error('Could not process ' + file.name, err);
               window.alert('Could not process "' + file.name + '". Export it as JPEG and try again. It was not uploaded.');
             }
           );
