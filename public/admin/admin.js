@@ -568,7 +568,10 @@
       this.props.onOpenMediaLibrary({
         controlID: this.controlID(),
         forImage: true,
-        privateUpload: false,
+        // Exactly what Decap's own image widget passes (undefined unless `private` is set). When
+        // this differs from the previous opening, Decap rebuilds its media-library state from
+        // scratch and loses `showMediaButton`, which removes "Media" from the top bar until reload.
+        privateUpload: this.props.field.get('private'),
         value: '',
         allowMultiple: false,
         field: this.props.field,
@@ -721,7 +724,10 @@
       this.props.onOpenMediaLibrary({
         controlID: this.controlID(),
         forImage: true,
-        privateUpload: false,
+        // Exactly what Decap's own image widget passes (undefined unless `private` is set). When
+        // this differs from the previous opening, Decap rebuilds its media-library state from
+        // scratch and loses `showMediaButton`, which removes "Media" from the top bar until reload.
+        privateUpload: this.props.field.get('private'),
         value: '',
         allowMultiple: false,
         field: this.props.field,
