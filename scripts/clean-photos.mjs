@@ -42,6 +42,8 @@ for (const name of await readdir(DIR)) {
   await sharp(file)
     .rotate()
     .resize(MAX, MAX, { fit: 'inside', withoutEnlargement: true })
+    // JPEG has no transparency: put transparent parts of a PNG on white, not the default black
+    .flatten({ background: '#fff' })
     .jpeg({ quality: 88, mozjpeg: true })
     .toFile(tmp);
   execFileSync('exiftool', ['-overwrite_original', '-TagsFromFile', file, ...KEEP.map((t) => `-${t}`), tmp]);

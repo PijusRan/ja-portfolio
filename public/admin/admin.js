@@ -293,17 +293,45 @@
   }
 
   // Only these four tags are written back; everything else in the original is dropped.
+  // exifr's "lite" build throws when asked for a list of tags, so it reads everything and the
+  // four are picked out here.
+  var CAMERA_TAGS = ['FocalLength', 'FNumber', 'ExposureTime', 'ISO'];
   function cameraTags(file) {
     var exifr = window.exifr;
     if (!exifr) return Promise.resolve(null);
     return exifr
-      .parse(file, ['FocalLength', 'FNumber', 'ExposureTime', 'ISO'])
-      .then(function (t) {
-        return t || null;
+      .parse(file)
+      .then(function (all) {
+        var tags = {};
+        var found = false;
+        CAMERA_TAGS.forEach(function (name) {
+          var value = all && all[name];
+          if (Array.isArray(value)) value = value[0];
+          if (typeof value === 'number' && isFinite(value) && value > 0) {
+            tags[name] = value;
+            found = true;
+          }
+        });
+        return found ? tags : null;
       })
       .catch(function () {
         return null;
       });
+  }
+
+  // The name Decap will store the photo under: Lithuanian (and other accented) letters lose their
+  // accents (ą → a, ž → z), anything else becomes "-", without repeated, leading or trailing dashes,
+  // since Decap strips those itself and the upload check below compares names exactly.
+  function fileBase(name) {
+    var base = name
+      .replace(/\.[^.]+$/, '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9_-]+/g, '-')
+      .replace(/-{2,}/g, '-')
+      .replace(/^-|-$/g, '');
+    return base || 'photo';
   }
 
   function compressPhoto(file) {
@@ -315,7 +343,11 @@
       var canvas = document.createElement('canvas');
       canvas.width = Math.round(bitmap.width * scale);
       canvas.height = Math.round(bitmap.height * scale);
-      canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      var context = canvas.getContext('2d');
+      // JPEG has no transparency: without a backdrop, transparent parts of a PNG would turn black
+      context.fillStyle = '#fff';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
       var dataUrl = canvas.toDataURL('image/jpeg', QUALITY); // canvas output carries no metadata
       try {
         var piexif = window.piexif;
@@ -334,8 +366,7 @@
       var binary = atob(dataUrl.slice(dataUrl.indexOf(',') + 1));
       var bytes = new Uint8Array(binary.length);
       for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-      var base = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
-      return new File([bytes], base + '.jpg', { type: 'image/jpeg' });
+      return new File([bytes], fileBase(file.name) + '.jpg', { type: 'image/jpeg' });
     });
   }
 
