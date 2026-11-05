@@ -8,6 +8,10 @@ astro dev --background
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`.
 
+## Commiting
+After making changes, commit them using one simple line as the commit message.
+Do not add credit to claude in the messages.
+
 ## Documentation
 
 Full documentation: https://docs.astro.build
