@@ -2,10 +2,15 @@ name: Clean photos
 
 # Safety net: the CMS shrinks and cleans photos before upload; this catches anything pushed
 # another way (git, GitHub web UI, a browser where the admin script failed).
+# Run it by hand ("Run workflow") to clean photos that were already on master.
 on:
   push:
     branches: [master]
     paths: ['src/assets/uploads/**']
+  workflow_dispatch:
+
+concurrency:
+  group: clean-photos
 
 permissions:
   contents: write
@@ -26,5 +31,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A src/assets/uploads
-          git diff --cached --quiet || { git commit -m "Compress and clean uploaded photos"; git push; }
+          git add -A src/assets/uploads src/content
+          git diff --cached --quiet && exit 0
+          git commit -m "Compress and clean uploaded photos"
+          # The CMS may have committed meanwhile
+          git pull --rebase && git push

@@ -1,5 +1,5 @@
 ---
-image: ~/assets/uploads/dsc_0177_original.jpeg
+image: ~/assets/uploads/dsc_0177_original.jpg
 focal: 30% 50%
 alt: Justas Andžius
 ---
