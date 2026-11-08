@@ -1,18 +1,23 @@
 ---
-title: Random
-coverImage: ~/assets/uploads/54e9d14b4e52a814f1dc8460962e33791c3ad6e04e50744172297ed39649c4_640.jpg
+title: ANT ratų
+coverImage: ~/assets/uploads/produkt-16.jpg
 photos:
-  - ~/assets/uploads/51e8d0444f56b10ff3d8992cc12c30771037dbf85254794e722c73d19245_640.jpg
-  - ~/assets/uploads/54e0d4455754a809ea898279c02132761022dfe05b597040702e7dd5_640.jpg
-  - ~/assets/uploads/54e9d14b4e52a814f1dc8460962e33791c3ad6e04e50744172297ed39649c4_640.jpg
-  - ~/assets/uploads/55e1d2454b51af14f1dc8460962e33791c3ad6e04e507441722a72dd974ac1_640.jpg
-  - ~/assets/uploads/5ee3dc414954b10ff3d8992cc12c30771037dbf85254794e732f7ad7934e_640.jpg
-  - ~/assets/uploads/57e7d54b4b51a514f1dc8460962e33791c3ad6e04e507441722978d69f48c6_640.jpg
-  - ~/assets/uploads/57e6d0434253b10ff3d8992cc12c30771037dbf852547941762a7fdc974c_640.jpg
-  - ~/assets/uploads/55e7d5414c55a814f1dc8460962e33791c3ad6e04e50744172287edc9f48cc_640.jpg
-  - ~/assets/uploads/5ee6d6454d57b10ff3d8992cc12c30771037dbf852547848702a7ed4974c_640.jpg
-  - ~/assets/uploads/file_example_jpg_2500kb.jpg
-order: 0
+  - ~/assets/uploads/produkt-15.jpg
+  - ~/assets/uploads/produkt-16.jpg
+  - ~/assets/uploads/produkt-27.jpg
+  - ~/assets/uploads/produkt-17.jpg
+  - ~/assets/uploads/produkt-18.jpg
+  - ~/assets/uploads/produkt-19.jpg
+  - ~/assets/uploads/produkt-21.jpg
+  - ~/assets/uploads/produkt-22.jpg
+  - ~/assets/uploads/produkt-23.jpg
+  - ~/assets/uploads/produkt-24.jpg
+  - ~/assets/uploads/produkt-28.jpg
+  - ~/assets/uploads/produkt-29.jpg
+  - ~/assets/uploads/produkt-31.jpg
+  - ~/assets/uploads/produkt-30.jpg
+order: 2
+brand: Gravel masters team
 layout: image-right
 focal: 50% 50%
 ---
