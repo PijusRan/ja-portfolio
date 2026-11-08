@@ -19,8 +19,9 @@ photos:
   - ~/assets/uploads/puodai-7.jpg
   - ~/assets/uploads/puodai-8.jpg
   - ~/assets/uploads/puodai-9.jpg
-order: 3
-brand: oli pica - maistas - gėrimai
+order: 4
+brand: oli pica
+season: maistas - gėrimai
 layout: image-left
 focal: 50% 50%
 ---
