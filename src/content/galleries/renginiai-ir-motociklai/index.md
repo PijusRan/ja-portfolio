@@ -23,7 +23,8 @@ photos:
   - ~/assets/uploads/dsc_3107.jpg
   - ~/assets/uploads/dsc_2719.jpg
   - ~/assets/uploads/dsc_3102.jpg
-order: 1
+order: 2
+brand: RENGINIAI IR MOTOCIKLAI
 layout: image-right
 focal: 50% 50%
 ---
