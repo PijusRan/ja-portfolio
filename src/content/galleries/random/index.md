@@ -16,7 +16,7 @@ photos:
   - ~/assets/uploads/produkt-29.jpg
   - ~/assets/uploads/produkt-31.jpg
   - ~/assets/uploads/produkt-30.jpg
-order: 2
+order: 0
 brand: Gravel masters team
 layout: image-right
 focal: 50% 50%
