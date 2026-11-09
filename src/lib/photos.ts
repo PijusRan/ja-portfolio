@@ -47,6 +47,16 @@ export function galleryUrl(gallery: Gallery): string {
   return withBase(`/darbai/${gallery.slug}/`);
 }
 
+/**
+ * A photo's pixel size. Reading `width`/`height` (or any field) straight off an imported image
+ * marks its original file as used, so Astro copies it into the build and the no-original-photos
+ * check fails it. `clone` hands back the same data without that.
+ */
+export function imageSize(image: ImageMetadata): { width: number; height: number } {
+  const { width, height } = (image as ImageMetadata & { clone?: ImageMetadata }).clone ?? image;
+  return { width, height };
+}
+
 /** The gallery's cover first, then its other photos (in the order chosen in the CMS). */
 export function getGalleryPhotos(gallery: Gallery): ImageMetadata[] {
   const seen = new Set<string>();
