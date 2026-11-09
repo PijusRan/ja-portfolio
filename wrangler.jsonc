@@ -12,11 +12,12 @@
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
   },
-  // The site is reachable at ja-portfolio.<account>.workers.dev until andzius.lt is attached.
-  // Once the andzius.lt zone is in the same Cloudflare account, uncomment to serve it there:
-  // "routes": [
-  //   { "pattern": "andzius.lt", "custom_domain": true },
-  //   { "pattern": "www.andzius.lt", "custom_domain": true }
-  // ],
+  // Serves the site on the domain (Cloudflare creates the DNS records and HTTPS certificates).
+  // Needs the andzius.lt zone in the same Cloudflare account, with no other A/AAAA/CNAME
+  // records for these two names. Also reachable at ja-portfolio.<account>.workers.dev.
+  "routes": [
+    { "pattern": "andzius.lt", "custom_domain": true },
+    { "pattern": "www.andzius.lt", "custom_domain": true }
+  ],
   "workers_dev": true
 }
