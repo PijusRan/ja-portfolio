@@ -67,6 +67,8 @@ const previewJson = JSON.stringify(await getPreviewPhotos(gallery)).replace(/</g
             data-preview-start={i}
             aria-haspopup="dialog"
             aria-label={`Peržiūrėti nuotrauką ${i + 1} iš ${photos.length}`}
+            data-reveal
+            style={`--reveal-delay: ${(i % 3) * 120}ms`}
           >
             <Image
               src={photo}
@@ -91,6 +93,17 @@ const previewJson = JSON.stringify(await getPreviewPhotos(gallery)).replace(/</g
     }
   </main>
   <script type="application/json" id="album-photos" set:html={previewJson} />
+  <script>
+    // Photos still downloading stay hidden and fade in once they arrive, instead of popping in.
+    // Ones already loaded (cached, or fast) are left alone, and without JS everything just shows.
+    document.querySelectorAll<HTMLImageElement>('.album__photo img').forEach((img) => {
+      if (img.complete) return;
+      img.classList.add('is-loading');
+      const done = () => img.classList.remove('is-loading');
+      img.addEventListener('load', done, { once: true });
+      img.addEventListener('error', done, { once: true });
+    });
+  </script>
   <Preview />
 </Layout>
 
@@ -146,6 +159,16 @@ const previewJson = JSON.stringify(await getPreviewPhotos(gallery)).replace(/</g
   .album__photo :global(img) {
     width: 100%;
     height: auto;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .album__photo :global(img) {
+      transition: opacity 0.9s var(--ease-out);
+    }
+
+    .album__photo :global(img.is-loading) {
+      opacity: 0;
+    }
   }
 
   .album__nav {
