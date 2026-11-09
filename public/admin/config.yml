@@ -117,7 +117,7 @@ collections:
         name: photos
         widget: photo-list
         required: false
-        hint: 'Click "Add photos", tick as many as you like in the library (or upload new ones there first, several at once), then "Add selected".'
+        hint: 'Click "Add photos", tick as many as you like in the library (or upload new ones there first, several at once), then "Add selected". All of them are shown on the album page; the first four also take turns with the cover on the work page.'
       - { label: Order, name: order, widget: number, value_type: int, min: 0, default: 0, hint: 'Lower numbers come first on the home and work pages.' }
       - { label: Brand, name: brand, widget: string, required: false, hint: 'Work page title, first line (e.g. "acne studios").' }
       - { label: Season, name: season, widget: string, required: false, hint: 'Work page title, second line (e.g. "2024 autumn/fall").' }
@@ -133,5 +133,5 @@ collections:
           - { label: Narrow image on the right, value: narrow-right }
         hint: How this project is laid out on the work page.
       - { label: Cover crop, name: focal, widget: string, default: '50% 50%', pattern: ['^\d{1,3}(\.\d+)?% \d{1,3}(\.\d+)?%$', 'Use the form "50% 50%"'], hint: 'Which part of the cover stays visible when cropped, as "x% y%". 50% 50% is the centre; use a higher second number to show more of the bottom.' }
-      - { label: Description, name: description, widget: text, required: false }
-      - { label: Story, name: body, widget: markdown, required: false }
+      - { label: Description, name: description, widget: text, required: false, hint: 'Shown under the title on the album page, and used as its search / link preview text.' }
+      - { label: Story, name: body, widget: markdown, required: false, hint: 'Longer text shown on the album page, under the description.' }

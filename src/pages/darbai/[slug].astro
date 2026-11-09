@@ -1,0 +1,172 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Preview from '../../components/Preview.astro';
+import { site } from '../../data/site';
+import { galleryUrl, getGalleries, getGalleryPhotos, type Gallery } from '../../lib/photos';
+import { getPreviewPhotos } from '../../lib/preview';
+import { withBase } from '../../lib/url';
+
+// One album page per gallery, at /darbai/<slug>/ (see getGalleries for the slug)
+export const getStaticPaths = (async () => {
+  const galleries = await getGalleries();
+  return galleries.map((gallery, index) => ({
+    params: { slug: gallery.slug },
+    props: { gallery, index, prev: galleries[index - 1], next: galleries[index + 1] },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  gallery: Gallery;
+  index: number;
+  prev?: Gallery;
+  next?: Gallery;
+}
+
+const { gallery, index, prev, next } = Astro.props;
+const { title, brand, season, description, coverImage } = gallery.data;
+const name = brand ?? title;
+const number = String(index + 1).padStart(2, '0');
+const photos = getGalleryPhotos(gallery);
+const { Content } = await render(gallery);
+const hasStory = Boolean(gallery.body?.trim());
+
+// The lightbox list goes in the page once and every photo points at it (see Preview.astro).
+// "<" is escaped so nothing in an alt text can close the script tag early.
+const previewJson = JSON.stringify(await getPreviewPhotos(gallery)).replace(/</g, '\\u003c');
+---
+
+<Layout title={`${name} — ${site.name}`} description={description} image={coverImage} theme="light">
+  <main id="turinys" class="album">
+    <a class="album__back h2" href={withBase('/darbai/')}>← Visi darbai</a>
+
+    <header class="album__header" data-reveal>
+      <p class="h2">{number}</p>
+      <h1 class="h1">{name}</h1>
+      {season && <p class="h2">{season}</p>}
+    </header>
+
+    {
+      (description || hasStory) && (
+        <div class="album__text" data-reveal>
+          {description && <p class="album__description">{description}</p>}
+          {hasStory && <Content />}
+        </div>
+      )
+    }
+
+    <div class="album__grid">
+      {
+        photos.map((photo, i) => (
+          <button
+            type="button"
+            class="album__photo"
+            data-preview-list="album-photos"
+            data-preview-start={i}
+            aria-haspopup="dialog"
+            aria-label={`Peržiūrėti nuotrauką ${i + 1} iš ${photos.length}`}
+          >
+            <Image
+              src={photo}
+              width={1200}
+              widths={[400, 800, 1200]}
+              sizes="(min-width: 1024px) 33vw, 50vw"
+              alt={i === 0 ? title : `${title}, ${i + 1}`}
+              loading={i < 3 ? 'eager' : 'lazy'}
+            />
+          </button>
+        ))
+      }
+    </div>
+
+    {
+      (prev || next) && (
+        <nav class="album__nav h2" aria-label="Kiti darbai">
+          {prev ? <a href={galleryUrl(prev)}>← {prev.data.brand ?? prev.data.title}</a> : <span />}
+          {next && <a href={galleryUrl(next)}>{next.data.brand ?? next.data.title} →</a>}
+        </nav>
+      )
+    }
+  </main>
+  <script type="application/json" id="album-photos" set:html={previewJson} />
+  <Preview />
+</Layout>
+
+<style>
+  .album {
+    display: flex;
+    flex-direction: column;
+    padding-top: 50px;
+  }
+
+  .album__back {
+    align-self: flex-start;
+    padding: 3px 0;
+  }
+
+  .album__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    padding: 150px 0;
+    text-align: center;
+  }
+
+  .album__text {
+    max-width: 60ch;
+    margin: 0 auto 90px;
+    line-height: 1.5;
+  }
+
+  .album__text :global(p + p),
+  .album__description + :global(*) {
+    margin-top: 1em;
+  }
+
+  /* Masonry: photos keep their own proportions and flow down three (two on smaller screens) columns */
+  .album__grid {
+    columns: 3;
+    column-gap: 16px;
+  }
+
+  .album__photo {
+    display: block;
+    width: 100%;
+    margin: 0 0 16px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+    break-inside: avoid;
+  }
+
+  .album__photo :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .album__nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 90px 0;
+  }
+
+  @media (max-width: 1023px) {
+    .album__grid {
+      columns: 2;
+      column-gap: 8px;
+    }
+
+    .album__photo {
+      margin-bottom: 8px;
+    }
+
+    .album__header {
+      padding: 100px 0;
+    }
+  }
+</style>

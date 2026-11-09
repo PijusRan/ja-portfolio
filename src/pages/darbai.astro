@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import ProjectRow from '../components/ProjectRow.astro';
-import Preview from '../components/Preview.astro';
 import { site } from '../data/site';
 import { getGalleries } from '../lib/photos';
 
@@ -13,5 +12,4 @@ const galleries = await getGalleries();
   <main id="turinys">
     {galleries.map((gallery, i) => <ProjectRow gallery={gallery} index={i} />)}
   </main>
-  <Preview />
 </Layout>

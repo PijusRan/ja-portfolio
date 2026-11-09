@@ -1,5 +1,8 @@
 ---
 // One shared preview dialog. Any element with data-preview='[{"src","srcset","alt","camera"?}]' opens it.
+// When many elements share one list (the album page), the list sits once in
+// <script type="application/json" id="…"> and each element points at it with data-preview-list="…",
+// plus data-preview-start="n" to open at that photo.
 ---
 
 <dialog class="lightbox" data-preview-dialog aria-label="Peržiūra">
@@ -52,16 +55,25 @@
     img.src = photo.src;
   }
 
+  const lists = new Map<string, Photo[]>();
+
+  function readPhotos(from: HTMLElement): Photo[] {
+    const id = from.dataset.previewList;
+    if (!id) return JSON.parse(from.dataset.preview ?? '[]');
+    if (!lists.has(id)) lists.set(id, JSON.parse(document.getElementById(id)?.textContent ?? '[]'));
+    return lists.get(id)!;
+  }
+
   function open(from: HTMLElement) {
     try {
-      photos = JSON.parse(from.dataset.preview ?? '[]');
+      photos = readPhotos(from);
     } catch {
       return;
     }
     if (!photos.length) return;
     const multiple = photos.length > 1;
     prevButton.hidden = nextButton.hidden = count.hidden = !multiple;
-    show(0);
+    show(Number(from.dataset.previewStart) || 0);
     // showModal() traps focus, closes on Escape and returns focus to the trigger on close
     dialog.showModal();
     closeButton.focus();
@@ -76,7 +88,7 @@
   });
 
   document.addEventListener('click', (e) => {
-    const from = (e.target as Element).closest<HTMLElement>('[data-preview]');
+    const from = (e.target as Element).closest<HTMLElement>('[data-preview], [data-preview-list]');
     if (from) {
       e.preventDefault();
       open(from);
