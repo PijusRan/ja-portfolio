@@ -1,0 +1,22 @@
+// Cloudflare Workers config: https://developers.cloudflare.com/workers/wrangler/configuration/
+// The site is plain static files (dist/, built by `npm run build`) served by Workers Static Assets.
+// There is no Worker code: every request is a static file, free and unmetered.
+// Deployed by .github/workflows/deploy.yml.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ja-portfolio",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // /darbai → /darbai/, served from darbai/index.html (Astro's default "directory" build format)
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  // The site is reachable at ja-portfolio.<account>.workers.dev until andzius.lt is attached.
+  // Once the andzius.lt zone is in the same Cloudflare account, uncomment to serve it there:
+  // "routes": [
+  //   { "pattern": "andzius.lt", "custom_domain": true },
+  //   { "pattern": "www.andzius.lt", "custom_domain": true }
+  // ],
+  "workers_dev": true
+}

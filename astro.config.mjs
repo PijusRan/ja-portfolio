@@ -23,13 +23,13 @@ function noOriginals() {
   };
 }
 
-// Deployed on Netlify (NETLIFY=true on its build machines) as plain static output.
+// Plain static output, served by Cloudflare (wrangler.jsonc). The deploy workflow sets URL.
 // https://astro.build/config
 export default defineConfig({
   site: process.env.URL ?? 'https://andzius.lt',
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/atsiliepimai/') && !page.includes('/admin'),
+      filter: (page) => !page.includes('/admin'),
     }),
     noOriginals(),
   ],

@@ -27,7 +27,7 @@ const {
   image,
 } = Astro.props;
 
-// Canonical and Open Graph URLs must be absolute, so they need `site` (set on Netlify and GitHub Pages)
+// Canonical and Open Graph URLs must be absolute, so they need `site` (set in astro.config.mjs)
 const canonical = Astro.site && new URL(Astro.url.pathname, Astro.site).href;
 const shareImage = image ?? (await getEntry('hero', 'index'))?.data.images[0]?.image;
 const ogImage =

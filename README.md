@@ -2,7 +2,7 @@
 
 Portfolio site for photographer Justas Andžius. **Astro** builds a static site
 (home, work and about pages), **Decap CMS** at `/admin` edits the content, and
-it deploys to **Netlify** (andzius.lt). Photos are committed into the repo
+it deploys to **Cloudflare** (andzius.lt). Photos are committed into the repo
 next to their gallery entry and optimized (responsive sizes, WebP) at build time
 by Astro's image pipeline, so no external image service is needed.
 
@@ -16,13 +16,13 @@ Sanity, which this project no longer uses).
 | Route        | What it shows                                                                  |
 | :----------- | :----------------------------------------------------------------------------- |
 | `/`          | Hero, "Darbai darbeliai" divider, thumbnail grid of gallery covers (max 21)     |
-| `/darbai/`   | Work page: one row per gallery with number, brand, season and cover            |
+| `/darbai/`   | Work page: one row per gallery with number, brand, season and rotating photos   |
+| `/darbai/<slug>/` | Album page: description, story and every photo of one gallery            |
 | `/apie/`     | About page: portrait, bio and contact line                                     |
-| `/gallery/<slug>/` | Gallery detail page with a photo grid and lightbox (not linked from the site UI) |
 
-Clicking a thumbnail on the home or work page opens an in-page preview of that
-gallery's photos (cover first, arrows and ← → keys to step through). It does not
-navigate to another page.
+Clicking a thumbnail on the home page, or a photo on an album page, opens an in-page
+preview of the gallery's photos (arrows and ← → keys to step through). A row on the
+work page links to that gallery's album page.
 
 Each page picks a colour theme: cream (home), white (work), black (about).
 
@@ -31,7 +31,10 @@ Each page picks a colour theme: cream (home), white (work), black (about).
 ```text
 /
 ├── .github/workflows/clean-photos.yml  # recompresses/cleans photos pushed outside the CMS
+├── .github/workflows/deploy.yml  # builds master and deploys it to Cloudflare
+├── wrangler.jsonc                 # Cloudflare config (static assets)
 ├── public/
+│   ├── _headers                   # Security and cache headers (Cloudflare)
 │   └── admin/                     # Decap CMS: index.html, config.yml, admin.css, admin.js (live preview)
 ├── src/
 │   ├── assets/
@@ -52,7 +55,7 @@ Each page picks a colour theme: cream (home), white (work), black (about).
 │   │   ├── photos.ts              # A gallery's cover + photos, de-duplicated
 │   │   ├── preview.ts             # Builds the photo list for the preview dialog
 │   │   └── url.ts                 # withBase(): prefixes links with the site's base path
-│   ├── pages/                     # index, darbai, apie, gallery/[slug]
+│   ├── pages/                     # index, darbai, darbai/[slug], apie
 │   └── styles/global.css          # Fonts, tokens, type scale, page shell
 └── package.json
 ```
@@ -143,16 +146,30 @@ The dashboard's look is in `public/admin/admin.css`, and the custom widget and
 upload helper are in `public/admin/admin.js`. Both depend on Decap's internal class
 names, so a Decap upgrade may need small fixes.
 
-### 2. Netlify (hosting)
+### 2. Cloudflare (hosting)
 
-Netlify deploys `master` once pushes have stopped for 10 minutes, so a burst of CMS
-commits costs one deploy. The `Deploy` GitHub Action waits, then calls a Netlify build
-hook (repo secret `NETLIFY_BUILD_HOOK`); `netlify.toml` skips builds not started by the
-hook. To deploy right away, open Actions → Deploy → Run workflow. To change the wait,
-edit `WAIT_SECONDS` in `.github/workflows/deploy.yml`. `netlify.toml` also sets the
-security headers. In the Netlify dashboard,
-for the feedback form: keep spam filtering on, send notifications only to the owner,
-open attachments from the Netlify UI, and delete old submissions now and then.
+The built site (`dist/`) is served by Cloudflare Workers Static Assets (`wrangler.jsonc`).
+It's all static files, with no server code, so requests cost nothing and deploys are
+unlimited. Security and cache headers are in `public/_headers`.
+
+The `Deploy` GitHub Action builds `master` and runs `wrangler deploy`, once pushes have
+stopped for 2 minutes (so a burst of CMS commits is one deploy) and again after the
+"Clean photos" action. To deploy right away, open Actions → Deploy → Run workflow.
+
+One-time setup:
+
+1. **Cloudflare account.** In the dashboard, *Manage account → Account API tokens*,
+   create a token from the *Edit Cloudflare Workers* template. Add it to the GitHub repo
+   (*Settings → Secrets and variables → Actions*) as `CLOUDFLARE_API_TOKEN`, and the
+   account ID (on the Workers overview page) as `CLOUDFLARE_ACCOUNT_ID`.
+2. **First deploy.** Run the Deploy action (or `npm run deploy` locally after
+   `npx wrangler login`). The site appears at `ja-portfolio.<account>.workers.dev`.
+3. **Domain.** Add `andzius.lt` to Cloudflare (*Add a domain*, then switch the nameservers
+   at the registrar). Uncomment `routes` in `wrangler.jsonc` and deploy again. If DecapBridge
+   asks for the site URL, it stays `https://andzius.lt`.
+
+`npm run preview:cloudflare` builds the site and serves it the way Cloudflare will
+(`localhost:8787`), headers and redirects included.
 
 ### 3. Photos
 
