@@ -31,7 +31,6 @@ Each page picks a colour theme: cream (home), white (work), black (about).
 ```text
 /
 ├── .github/workflows/clean-photos.yml  # recompresses/cleans photos pushed outside the CMS
-├── .github/workflows/deploy.yml  # builds master and deploys it to Cloudflare
 ├── wrangler.jsonc                 # Cloudflare config (static assets)
 ├── public/
 │   ├── _headers                   # Security and cache headers (Cloudflare)
@@ -152,19 +151,19 @@ The built site (`dist/`) is served by Cloudflare Workers Static Assets (`wrangle
 It's all static files, with no server code, so requests cost nothing and deploys are
 unlimited. Security and cache headers are in `public/_headers`.
 
-The `Deploy` GitHub Action builds `master` and runs `wrangler deploy`, once pushes have
-stopped for 2 minutes (so a burst of CMS commits is one deploy) and again after the
-"Clean photos" action. To deploy right away, open Actions → Deploy → Run workflow.
+Cloudflare is connected to the GitHub repo (Workers Builds): every push to `master`,
+including CMS edits and the "Clean photos" commits, builds with `npm run build` and deploys
+with `npx wrangler deploy`. Builds use the Node version in `.node-version`. Build logs are in
+the dashboard under the `ja-portfolio` Worker → *Deployments*; *Retry build* there redeploys.
 
 One-time setup:
 
-1. **Cloudflare account.** In the dashboard, *Manage account → Account API tokens*,
-   create a token from the *Edit Cloudflare Workers* template. Add it to the GitHub repo
-   (*Settings → Secrets and variables → Actions*) as `CLOUDFLARE_API_TOKEN`, and the
-   account ID (on the Workers overview page) as `CLOUDFLARE_ACCOUNT_ID`.
-2. **First deploy.** Run the Deploy action (or `npm run deploy` locally after
-   `npx wrangler login`). The site appears at `ja-portfolio.<account>.workers.dev`.
-3. **Domain.** Add `andzius.lt` to Cloudflare (*Add a domain*, then switch the nameservers
+1. **Connect the repo.** In the Cloudflare dashboard, *Workers & Pages → Create → Import a
+   repository*, connect GitHub and pick this repo. Name it `ja-portfolio` (it must match
+   `name` in `wrangler.jsonc`), set the build command to `npm run build`, keep the deploy
+   command `npx wrangler deploy`, and the production branch `master`. The site appears at
+   `ja-portfolio.<account>.workers.dev`.
+2. **Domain.** Add `andzius.lt` to Cloudflare (*Add a domain*, then switch the nameservers
    at the registrar). Uncomment `routes` in `wrangler.jsonc` and deploy again. If DecapBridge
    asks for the site URL, it stays `https://andzius.lt`.
 

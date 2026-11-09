@@ -1,7 +1,7 @@
 // Cloudflare Workers config: https://developers.cloudflare.com/workers/wrangler/configuration/
 // The site is plain static files (dist/, built by `npm run build`) served by Workers Static Assets.
 // There is no Worker code: every request is a static file, free and unmetered.
-// Deployed by .github/workflows/deploy.yml.
+// Cloudflare builds and deploys master itself (Workers Builds, connected to the GitHub repo).
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ja-portfolio",
