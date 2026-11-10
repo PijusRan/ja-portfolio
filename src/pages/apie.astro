@@ -31,10 +31,10 @@ const { Content } = await render(about);
       <div class="about__bio" data-reveal style="--reveal-delay: 150ms"><Content /></div>
     </div>
     <div class="cta" data-reveal>
-      <h2 class="h2">
-        Papildoma informacija:{' '}
-        <a href={`mailto:${site.email}`}>{site.email}</a>
-      </h2>
+      {/* Opens the contact dialog (Contact.astro); a plain mailto: link without JavaScript */}
+      <a class="cta__button h2" href={`mailto:${site.email}`} data-contact-open aria-haspopup="dialog">
+        Susisiekite
+      </a>
     </div>
   </main>
 </Layout>
@@ -94,9 +94,20 @@ const { Content } = await render(about);
     text-align: center;
   }
 
-  /* Wraps onto several lines on narrow screens; .h2's 0.8 line-height is too tight for that */
-  .cta .h2 {
-    line-height: 1.25;
+  .cta__button {
+    padding: 22px 48px;
+    border: 1px solid currentColor;
+    transition:
+      background-color 0.25s var(--ease-out),
+      color 0.25s var(--ease-out);
+  }
+
+  /* Fills in on hover instead of the site-wide link fade */
+  .cta__button:hover,
+  .cta__button:focus-visible {
+    opacity: 1;
+    background: var(--fg);
+    color: var(--bg);
   }
 
   @media (max-width: 1023px) {
