@@ -8,6 +8,6 @@ export const site = {
   nav: [
     { label: 'Darbai', href: '/darbai/' },
     { label: 'Apie mane', href: '/apie/' },
-    { label: 'Susisiekite', href: 'mailto:justasandzius@gmail.com' },
+    { label: 'Susisiekite', href: 'mailto:justasandzius@gmail.com', contact: true },
   ],
 } as const;

@@ -12,7 +12,12 @@ const links = site.nav.map((link) => ({ ...link, href: withBase(link.href) }));
     {
       links.map((link) => (
         <li>
-          <a href={link.href} aria-current={path.startsWith(link.href) ? 'page' : undefined}>
+          <a
+            href={link.href}
+            aria-current={path.startsWith(link.href) ? 'page' : undefined}
+            data-contact-open={'contact' in link ? '' : undefined}
+            aria-haspopup={'contact' in link ? 'dialog' : undefined}
+          >
             {link.label}
           </a>
         </li>

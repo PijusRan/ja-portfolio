@@ -7,6 +7,7 @@ import displayFont from '../assets/fonts/montserrat-latin-600-normal.woff2?url';
 import { withBase } from '../lib/url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Contact from '../components/Contact.astro';
 
 interface Props {
   title: string;
@@ -78,6 +79,7 @@ const ogImage =
       <slot />
       <Footer />
     </div>
+    <Contact />
     <script>
       // Fade [data-reveal] elements in as they scroll into view (styles in global.css, "Motion")
       const targets = document.querySelectorAll('[data-reveal]');

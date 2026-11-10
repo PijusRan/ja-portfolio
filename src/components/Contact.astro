@@ -1,0 +1,157 @@
+---
+// Contact dialog, opened by any element with data-contact-open (the "Susisiekite" nav link).
+// The link itself is a mailto:, so without JavaScript it still works as before.
+import { site } from '../data/site';
+
+const contacts = [
+  { label: 'El. paštas', value: site.email, href: `mailto:${site.email}` },
+  { label: 'Instagram', value: '@and_justas', href: site.instagram },
+  { label: 'Facebook', value: site.name, href: site.facebook },
+];
+---
+
+<dialog class="contact" data-contact-dialog aria-labelledby="contact-title">
+  <div class="contact__panel">
+    <div class="contact__head">
+      <h2 class="h2" id="contact-title">Susisiekite</h2>
+      <button type="button" class="contact__close" data-contact-close aria-label="Uždaryti">×</button>
+    </div>
+    <ul class="contact__list">
+      {
+        contacts.map(({ label, value, href }) => (
+          <li>
+            <a
+              href={href}
+              target={href.startsWith('mailto:') ? undefined : '_blank'}
+              rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+            >
+              <span class="contact__label">{label}</span>
+              <span class="contact__value">{value}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-contact-dialog]')!;
+  const closeButton = dialog.querySelector<HTMLElement>('[data-contact-close]')!;
+
+  document.addEventListener('click', (e) => {
+    const trigger = (e.target as Element).closest('[data-contact-open]');
+    if (!trigger) return;
+    e.preventDefault();
+    // showModal() traps focus, closes on Escape and returns focus to the trigger on close
+    dialog.showModal();
+    closeButton.focus();
+  });
+
+  closeButton.addEventListener('click', () => dialog.close());
+
+  // A click on the backdrop (outside the panel) closes it
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+</script>
+
+<style>
+  .contact {
+    width: min(560px, calc(100% - 40px));
+    max-width: none;
+    padding: 0;
+    border: 1px solid var(--divider);
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  .contact::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+  }
+
+  :global(html:has(.contact[open])) {
+    overflow: hidden;
+  }
+
+  .contact__panel {
+    padding: 30px;
+  }
+
+  .contact__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 30px;
+  }
+
+  .contact__close {
+    margin: -10px -10px -10px 0;
+    padding: 10px;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 1.6em;
+    line-height: 0.6;
+    cursor: pointer;
+  }
+
+  .contact__close:hover {
+    opacity: 0.6;
+  }
+
+  .contact__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .contact__list a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 20px;
+    padding: 18px 0;
+    border-top: 1px solid var(--divider);
+  }
+
+  .contact__label {
+    color: var(--muted);
+  }
+
+  /* The email address is long; let it break rather than overflow on narrow phones */
+  .contact__value {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+
+  @media (max-width: 639px) {
+    .contact__panel {
+      padding: 20px;
+    }
+
+    .contact__list a {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .contact__value {
+      text-align: left;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .contact[open] {
+      animation: contact-in 0.35s var(--ease-out);
+    }
+
+    @keyframes contact-in {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+    }
+  }
+</style>
