@@ -3,6 +3,7 @@ export const site = {
   brand: 'j.a',
   email: 'justasandzius@gmail.com',
   instagram: 'https://www.instagram.com/and_justas/',
+  facebook: 'https://www.facebook.com/JustasAndzius',
   cities: { left: 'Pasvalys', right: 'Vilnius' },
   nav: [
     { label: 'Darbai', href: '/darbai/' },
