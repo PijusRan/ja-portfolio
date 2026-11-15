@@ -1,5 +1,5 @@
 ---
-title: RENGINIAI IR MOTOCIKLAI
+title: AUTOMOBILIAI IR MOTOCIKLAI
 coverImage: ~/assets/uploads/dsc_3107.jpg
 photos:
   - ~/assets/uploads/dsc_3107.jpg
@@ -24,7 +24,7 @@ photos:
   - ~/assets/uploads/dsc_2719.jpg
   - ~/assets/uploads/dsc_3102.jpg
 order: 2
-brand: RENGINIAI IR MOTOCIKLAI
+brand: AUTOMOBILIAI IR MOTOCIKLAI
 layout: image-left
 focal: 50% 50%
 ---
