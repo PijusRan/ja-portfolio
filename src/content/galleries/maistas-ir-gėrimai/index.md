@@ -22,7 +22,7 @@ photos:
   - ~/assets/uploads/puodai-8.jpg
   - ~/assets/uploads/puodai-9.jpg
 order: 4
-brand: ""
+brand: Maistas ir gėrimai
 season: ""
 layout: image-left
 focal: 50% 50%
