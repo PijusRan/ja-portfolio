@@ -22,8 +22,8 @@ photos:
   - ~/assets/uploads/puodai-8.jpg
   - ~/assets/uploads/puodai-9.jpg
 order: 4
-brand: oli pica
-season: maistas - gėrimai
+brand: ""
+season: ""
 layout: image-left
 focal: 50% 50%
 ---
