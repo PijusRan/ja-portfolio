@@ -29,7 +29,7 @@ export default defineConfig({
   site: process.env.URL ?? 'https://andzius.lt',
   integrations: [
     sitemap({
-      filter: (page) => !page.includes('/admin') && !page.includes('/darbai/alt'),
+      filter: (page) => !page.includes('/admin'),
     }),
     noOriginals(),
   ],
