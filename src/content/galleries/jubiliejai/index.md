@@ -8,6 +8,7 @@ photos:
   - ~/assets/uploads/dsc_6947.jpg
   - ~/assets/uploads/dsc_8878.jpg
   - ~/assets/uploads/dsc_9452_original.jpg
+  - ~/assets/uploads/img_0261.jpg
 order: 0
 layout: full
 focal: 50% 50%
