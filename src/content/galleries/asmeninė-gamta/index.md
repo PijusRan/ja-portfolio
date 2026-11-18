@@ -1,5 +1,5 @@
 ---
-title: asmeninė - gamta
+title: asmeninė fotografija
 coverImage: ~/assets/uploads/gamtos-42.jpg
 photos:
   - ~/assets/uploads/gamtos-42.jpg
@@ -21,6 +21,9 @@ photos:
   - ~/assets/uploads/gamtos-9.jpg
   - ~/assets/uploads/gamtos-52.jpg
   - ~/assets/uploads/jokse-5.jpg
+  - ~/assets/uploads/dsc_3122_original.jpg
+  - ~/assets/uploads/dsc_1627_original.jpg
+  - ~/assets/uploads/dsc_0939_original.jpg
 order: 0
 layout: full
 focal: 50% 20%
